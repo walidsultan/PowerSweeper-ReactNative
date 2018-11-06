@@ -1,0 +1,38 @@
+.alert
+{
+        .message{
+            margin-bottom: 10px;
+            border-bottom: 1px solid #CCC;
+            padding: 10px 15px;
+        }
+
+        .buttons{
+            padding: 0 10px 10px 0;
+            float: right;
+            button{
+                border: 1px solid #999;
+                background-color: #dadada ;
+                font-weight: bold;
+                color: #585656;
+                margin-left: 10px;
+                padding:6px 20px;
+                border-radius: 5px;
+                &:hover{
+                    border: 1px solid #222;
+                    color: #212121;
+                    cursor: pointer;
+                }
+            }
+        }
+}
+
+
+@media screen and (max-width: 640px), screen and (max-height: 700px) {
+    .alert
+    {
+        font-size: 22px;
+    }
+}
+
+
+

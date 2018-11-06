@@ -1,0 +1,36 @@
+.menuContent
+{
+    .desktopInstructions{
+        display: block ;
+    }
+    .phoneInstructions{
+        display:none;
+    }   
+    .creditsContainer{
+        padding: 10px;
+        text-align: center;
+        .creditsHeader{
+            font-weight: bold;
+        }
+        .creditsTitle{
+            margin-bottom: 10px;
+        }
+    }
+}
+@media screen and (max-width: 640px), screen and (max-height: 700px) {
+    .menuContent
+    {
+           font-size: 26px;
+           .desktopInstructions{
+               display: none;
+           }
+           .phoneInstructions{
+               display:block;
+           }
+
+          
+    }
+}
+
+
+

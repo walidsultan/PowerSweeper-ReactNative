@@ -1,0 +1,82 @@
+.menu{
+    position: relative;
+        margin: auto;
+      //  width: 1600px;
+        height: 99%;
+        background-image: url(src/images/menu.png);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        .itemsContainer{
+            top: 51%;
+            text-align: center;
+            margin: auto;
+            position: relative;
+            font-size: 40px;
+            -webkit-transform: rotateX(38deg); /* Safari */
+            transform: rotateX(38deg);
+            .item{
+                margin-bottom: 10px;
+                clear: both;
+                font-family: 'FunkyFont',cursive;
+                &:hover{
+                    cursor: pointer;
+                    color: rgb(11, 21, 158);
+                }
+
+                &.disabled{
+                    color:#999;
+                    &:hover{
+                        color:#999;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+        div{
+            height: auto;
+        }
+}
+
+@font-face {
+    font-family: 'FunkyFont';
+    src: url('src/fonts/FunkyFont.ttf'); /* IE9 Compat Modes */
+    src: url('src/fonts/FunkyFont.ttf?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('src/fonts/FunkyFont.ttf')  format('truetype'), /* Safari, Android, iOS */
+  }
+
+  @media screen and (max-width: 640px), screen and (max-height: 700px) {
+    .menu{
+        background-image: url(src/images/PowerSweeper-Phone.png);
+        .itemsContainer{
+            top: 31%;
+            color: rgb(127, 175, 177) ;
+            z-index: 10;
+            -webkit-transform: translateZ(0px);
+            -webkit-transform: translate3d(0,0,0);
+            -webkit-perspective: 1000;
+            .item{
+                &:hover{
+                    color:#fff;
+                }
+                &.disabled{
+                    color:#111;
+                    &:hover{
+                        color:#111;
+                    }
+                }
+            }
+        }
+        .backgroundExtender{
+            background-color: #1027BD;
+            left: 0;
+            top: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .popup{
+            height:100%;
+        }
+    }
+  }
