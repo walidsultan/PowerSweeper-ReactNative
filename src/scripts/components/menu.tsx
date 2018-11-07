@@ -1,11 +1,11 @@
 // import '../../css/menu.less';
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
-import LevelDifficulty from './LevelDifficulty';
+// import LevelDifficulty from './LevelDifficulty';
 import MenuState from '../states/MenuState';
-import { Difficulty } from '../enums/difficulty';
-import MenuContent from './MenuContent';
-import {Text} from 'react-native';
+// import { Difficulty } from '../enums/difficulty';
+// import MenuContent from './MenuContent';
+import { Text, View, Button, StyleProp, ViewStyle } from 'react-native';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -22,38 +22,53 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
     render() {
 
-        let menuStyle = {
-            width: this.state.menuWidth,
-            height: this.state.menuHeight
+        let menuStyle: StyleProp<ViewStyle> = {
+            flex: 1,
+            justifyContent: 'center',
+            backgroundColor: '#333'
         };
 
-        let itemsContainerStyle = {
-            fontSize: this.state.fontSize
+        let buttonContainerStyle: StyleProp<ViewStyle> = {
+            margin: 20
         };
 
-        return <div className='menu' ref={this.menuRef} style={menuStyle}>
-            <div className='itemsContainer' style={itemsContainerStyle}>
-                <div className='item' onClick={() => this.OnNewClick()}>New Game</div>
-                <div className='item disabled'>High Scores</div>
-                <div className='item' onClick={() => this.OnInstructionsClick()}>Instructions</div>
-                <div className='item' onClick={() => this.OnCreditsClick()}>Credits</div>
-            </div>
-            <div className='backgroundExtender'></div>
-            <LevelDifficulty showPopup={this.state.showNewLevelPopup}
+        let itemsContainerStyle: StyleProp<ViewStyle> = {
+            justifyContent: 'center'
+        };
+
+        return <View ref={this.menuRef} style={menuStyle}>
+
+
+            <View style={itemsContainerStyle}>
+                <View style={buttonContainerStyle}>
+                    <Button onPress={() => this.OnNewClick()} title='New Game' ></Button>
+                </View>
+                <View style={buttonContainerStyle}>
+                    <Button onPress={() => this.OnNewClick()} title='High Scores'></Button>
+                </View>
+                <View style={buttonContainerStyle}>
+                    <Button onPress={() => this.OnInstructionsClick()} title='Instructions'></Button>
+                </View>
+                <View style={buttonContainerStyle}>
+                    <Button onPress={() => this.OnCreditsClick()} title='Credits'></Button>
+                </View>
+            </View>
+            {/* <View className='backgroundExtender'></View> */}
+            {/* <LevelDifficulty showPopup={this.state.showNewLevelPopup}
                 onCloseClick={() => this.OnLevelDifficultyCloseClick()}
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
                 onMediumLevelClick={() => this.props.onNewLevel(Difficulty.Medium)}
                 onHardLevelClick={() => this.props.onNewLevel(Difficulty.Hard)}
                 popupWidth={this.state.popupWidth}
                 title='Difficulty'
-            ></LevelDifficulty>
-            <MenuContent
+            ></LevelDifficulty> */}
+            {/* <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Instructions'
                 showPopup={this.state.showInstructionsPopup}
                 popupWidth={this.state.popupWidth}
             >
-                <div className='desktopInstructions'>
+                <View className='desktopInstructions'>
                     <ul>
                         <li><Text>Right click on any block to mark a mine.</Text></li>
                         <li><Text>There are three types of mines, each type has a different power.</Text></li>
@@ -61,8 +76,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                         <li><Text>The goal is to locate all the mines.</Text></li>
                         <li><Text>Small=1 Medium=2 Large=3</Text></li>
                     </ul>
-                </div>
-                <div className='phoneInstructions'>
+                </View>
+                <View className='phoneInstructions'>
                     <ul>
                         <li><Text>Tap and hold on any block to mark a mine.</Text></li>
                         <li><Text>There are three types of mines, each type has a different power.</Text></li>
@@ -70,7 +85,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                         <li><Text>The goal is to locate all the mines.</Text></li>
                         <li><Text>Small=1 Medium=2 Large=3</Text></li>
                     </ul>
-                </div>
+                </View>
             </MenuContent>
 
             <MenuContent
@@ -79,22 +94,22 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 showPopup={this.state.showCreditsPopup}
                 popupWidth={this.state.popupWidth}
             >
-            <div className='creditsContainer'>
-                <div className='creditsHeader'>
+            <View className='creditsContainer'>
+                <View className='creditsHeader'>
                 Programming
-                </div>
-                <div className='creditsTitle'>
+                </View>
+                <View className='creditsTitle'>
                     Walid Sultan
-                </div>
-                <div  className='creditsHeader'>
+                </View>
+                <View  className='creditsHeader'>
                 Graphic Design
-                </div>
-                <div className='creditsTitle'>
+                </View>
+                <View className='creditsTitle'>
                     Shady Sultan
-                </div>
-             </div>
-            </MenuContent>
-        </div>;
+                </View>
+             </View>
+            </MenuContent> */}
+        </View>;
     }
 
     onMenuContentCloseClick() {
@@ -110,7 +125,6 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     componentDidMount() {
-        window.addEventListener('resize', this.updateDimensions);
         this.updateDimensions();
     }
 

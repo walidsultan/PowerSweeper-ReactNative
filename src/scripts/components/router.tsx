@@ -6,6 +6,7 @@ import { PageView } from '../enums/pageView';
 import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
+import { View, StyleProp, ViewStyle } from 'react-native';
 
 export default class Router extends React.Component<RouterInterface, RouterState> {
     private routerRef: any;
@@ -16,10 +17,13 @@ export default class Router extends React.Component<RouterInterface, RouterState
         this.routerRef = React.createRef();
     }
     render() {
+        let routerStyle: StyleProp<ViewStyle> = {
+             flex: 1
+        };
         return (
-            <div className='router' onKeyUp={(e) => this.handleBoardKeyUp(e.keyCode)} tabIndex={0} ref={this.routerRef}>
+            <View style= {routerStyle}>
                 {this.getCurrentView()}
-            </div>
+            </View>
         );
     }
 
