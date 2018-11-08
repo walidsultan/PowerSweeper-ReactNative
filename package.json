@@ -20,11 +20,12 @@
     "buildAndStart": "yarn run build && yarn run watchAndStart "
   },
   "dependencies": {
-    "expo": "^31.0.2",
+    "expo": "^31.0.4",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz"
   },
   "devDependencies": {
+    "@types/expo": "^30.0.0",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
     "@types/react-native": "^0.57.7",

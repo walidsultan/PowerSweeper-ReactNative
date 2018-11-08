@@ -5,7 +5,9 @@ import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
 // import { Difficulty } from '../enums/difficulty';
 // import MenuContent from './MenuContent';
-import { Text, View, Button, StyleProp, ViewStyle } from 'react-native';
+import { Text, View, Button } from 'react-native';
+import MenuStyles from '../../styles/menuStyles';
+import { Font } from 'expo';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -22,35 +24,19 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
     render() {
 
-        let menuStyle: StyleProp<ViewStyle> = {
-            flex: 1,
-            justifyContent: 'center',
-            backgroundColor: '#333'
-        };
-
-        let buttonContainerStyle: StyleProp<ViewStyle> = {
-            margin: 20
-        };
-
-        let itemsContainerStyle: StyleProp<ViewStyle> = {
-            justifyContent: 'center'
-        };
-
-        return <View ref={this.menuRef} style={menuStyle}>
-
-
-            <View style={itemsContainerStyle}>
-                <View style={buttonContainerStyle}>
-                    <Button onPress={() => this.OnNewClick()} title='New Game' ></Button>
+        return  <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
+            <View style={MenuStyles.itemsContainer}>
+                <View style={MenuStyles.buttonContainer}>
+                    <Text onPress={() => this.OnNewClick()}  style={this.state.fontLoaded ? MenuStyles.button : undefined}>New Game</Text>
                 </View>
-                <View style={buttonContainerStyle}>
-                    <Button onPress={() => this.OnNewClick()} title='High Scores'></Button>
+                <View style={MenuStyles.buttonContainer}>
+                    <Text onPress={() => this.OnNewClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
                 </View>
-                <View style={buttonContainerStyle}>
-                    <Button onPress={() => this.OnInstructionsClick()} title='Instructions'></Button>
+                <View style={MenuStyles.buttonContainer}>
+                    <Text onPress={() => this.OnInstructionsClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
                 </View>
-                <View style={buttonContainerStyle}>
-                    <Button onPress={() => this.OnCreditsClick()} title='Credits'></Button>
+                <View style={MenuStyles.buttonContainer}>
+                    <Text onPress={() => this.OnCreditsClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>Credits</Text>
                 </View>
             </View>
             {/* <View className='backgroundExtender'></View> */}
@@ -124,7 +110,12 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         this.setState({ showCreditsPopup: true });
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        await Font.loadAsync({
+            'funkyFont': require('../../../assets/fonts/KBZipaDeeDooDah.ttf')
+          });
+
+        this.setState({ fontLoaded: true });
         this.updateDimensions();
     }
 
