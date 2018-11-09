@@ -25,6 +25,21 @@ const MenuStyles = StyleSheet.create({
      padding: 10,
      justifyContent: 'center',
      backgroundColor: '#777'
+    },
+    instructions:{
+        fontSize: 20
+    },
+    creditsContainer:{
+        justifyContent:'center',
+        flexDirection: 'column',
+        alignItems:'center',
+    },
+    creditsTitle:{
+        fontWeight:'bold',
+        fontSize:20
+    },
+    creditsText:{
+        fontSize:20
     }
 });
 

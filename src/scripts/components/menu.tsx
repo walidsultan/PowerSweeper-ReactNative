@@ -1,13 +1,12 @@
-// import '../../css/menu.less';
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
-// import LevelDifficulty from './LevelDifficulty';
 import MenuState from '../states/MenuState';
-// import { Difficulty } from '../enums/difficulty';
 import { Text, View, TouchableHighlight, FlatList } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
+import LevelDifficulty from './LevelDifficulty';
+import { Difficulty } from '../enums/difficulty';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -47,21 +46,20 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
             </View>
-            {/* <LevelDifficulty showPopup={this.state.showNewLevelPopup}
+            <LevelDifficulty showPopup={this.state.showNewLevelPopup}
                 onCloseClick={() => this.OnLevelDifficultyCloseClick()}
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
                 onMediumLevelClick={() => this.props.onNewLevel(Difficulty.Medium)}
                 onHardLevelClick={() => this.props.onNewLevel(Difficulty.Hard)}
-                popupWidth={this.state.popupWidth}
                 title='Difficulty'
-            ></LevelDifficulty> */}
+            ></LevelDifficulty>
             <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Instructions'
                 showPopup={this.state.showInstructionsPopup}
             >
                 <View >
-                    <FlatList
+                    <FlatList 
                         data={[
                             { key: '\u2022 Tap and hold on any block to mark a mine.' },
                             { key: '\u2022 There are three types of mines, each type has a different power.' },
@@ -69,7 +67,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                             { key: '\u2022 The goal is to locate all the mines.' },
                             { key: '\u2022 Small=1 Medium=2 Large=3' },
                         ]}
-                        renderItem={({ item }) => <Text>{item.key}</Text>}
+                        renderItem={({ item }) => <Text style={MenuStyles.instructions}>{item.key}</Text>}
                     />
                 </View>
 
@@ -80,18 +78,20 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 title='Credits'
                 showPopup={this.state.showCreditsPopup}
             >
-                <Text >
+            <View style={MenuStyles.creditsContainer}>
+                <Text style={MenuStyles.creditsTitle}>
                     Programming
                      </Text>
-                <Text>
+                <Text  style={MenuStyles.creditsText}>
                     Walid Sultan
                     </Text>
-                <Text >
+                <Text style={MenuStyles.creditsTitle}>
                     Graphic Design
                 </Text>
-                <Text >
+                <Text  style={MenuStyles.creditsText}>
                     Shady Sultan
                   </Text>
+            </View>
             </MenuContent>
 
         </View >;

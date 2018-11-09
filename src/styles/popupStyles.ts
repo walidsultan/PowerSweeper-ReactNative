@@ -16,7 +16,15 @@ const PopupStyles = StyleSheet.create({
         borderBottomColor: '#222',
         borderBottomWidth: 1,
         marginBottom: 10,
-        paddingBottom: 10
+        paddingBottom: 10,
+        justifyContent: 'space-between',
+        flexDirection: 'row'
+    },
+    close:{
+        width: 20
+    },
+    content:{
+        flex:1
     }
 
    

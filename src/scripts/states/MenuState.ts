@@ -1,6 +1,6 @@
 
 export default class MenuState {
-    showNewLevelPopup: boolean;
+    showNewLevelPopup: boolean= false;
     menuWidth: number;
     menuHeight: number;
     fontSize: number;
