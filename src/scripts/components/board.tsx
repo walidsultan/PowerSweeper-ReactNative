@@ -325,7 +325,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         </div>
 
                                 </div>
-                                 <div className='backgroundExtender'></div>
 
                                 <Alert title={this.boardState.alertState.alertTitle}
                                         showPopup={this.boardState.alertState.showAlert}
