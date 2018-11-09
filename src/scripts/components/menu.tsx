@@ -5,7 +5,7 @@ import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
 // import { Difficulty } from '../enums/difficulty';
 // import MenuContent from './MenuContent';
-import { Text, View, Button } from 'react-native';
+import { Text, View, TouchableHighlight, Modal } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 
@@ -24,19 +24,27 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
     render() {
 
-        return  <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
+        return <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
             <View style={MenuStyles.itemsContainer}>
                 <View style={MenuStyles.buttonContainer}>
-                    <Text onPress={() => this.OnNewClick()}  style={this.state.fontLoaded ? MenuStyles.button : undefined}>New Game</Text>
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>New Game</Text>
+                    </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <Text onPress={() => this.OnNewClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
+                    </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <Text onPress={() => this.OnInstructionsClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
+                    </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <Text onPress={() => this.OnCreditsClick()} style={this.state.fontLoaded ? MenuStyles.button : undefined}>Credits</Text>
+                    <TouchableHighlight onPress={() => { this.OnCreditsClick(); }} >
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Credits</Text>
+                    </TouchableHighlight>
                 </View>
             </View>
             {/* <View className='backgroundExtender'></View> */}
@@ -80,22 +88,29 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 showPopup={this.state.showCreditsPopup}
                 popupWidth={this.state.popupWidth}
             >
-            <View className='creditsContainer'>
-                <View className='creditsHeader'>
-                Programming
+            */}
+
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={this.state.showCreditsPopup}
+                onRequestClose={() => this.onMenuContentCloseClick()}>
+                <View>
+                    <Text >
+                        Programming
+                     </Text>
+                    <Text>
+                        Walid Sultan
+                    </Text>
+                    <Text >
+                        Graphic Design
+                </Text>
+                    <Text >
+                        Shady Sultan
+                  </Text>
                 </View>
-                <View className='creditsTitle'>
-                    Walid Sultan
-                </View>
-                <View  className='creditsHeader'>
-                Graphic Design
-                </View>
-                <View className='creditsTitle'>
-                    Shady Sultan
-                </View>
-             </View>
-            </MenuContent> */}
-        </View>;
+            </Modal>
+        </View >;
     }
 
     onMenuContentCloseClick() {
@@ -113,7 +128,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     async componentDidMount() {
         await Font.loadAsync({
             'funkyFont': require('../../../assets/fonts/KBZipaDeeDooDah.ttf')
-          });
+        });
 
         this.setState({ fontLoaded: true });
         this.updateDimensions();
