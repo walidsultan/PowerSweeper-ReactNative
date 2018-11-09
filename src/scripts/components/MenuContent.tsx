@@ -2,6 +2,7 @@
 import * as React from 'react';
 import Popup from './popup';
 import MenuContentInterface from '../interfaces/MenuContentInterface';
+import { View } from 'react-native';
 
 export default class MenuContent extends React.Component<MenuContentInterface, {}> {
 
@@ -12,13 +13,11 @@ export default class MenuContent extends React.Component<MenuContentInterface, {
     render() {
         return (
             <Popup showPopup={this.props.showPopup}
-                popupWidth={this.props.popupWidth}
                 title={this.props.title}
-                onCloseClick={() => this.props.onCloseClick()}
-            >
-                <div className='menuContent'>
+                onCloseClick={() => this.props.onCloseClick()}>
+                <View>
                     {this.props.children}
-                </div>
+                </View>
             </Popup>
         );
     }

@@ -4,10 +4,10 @@ import MenuInterface from '../interfaces/MenuInterface';
 // import LevelDifficulty from './LevelDifficulty';
 import MenuState from '../states/MenuState';
 // import { Difficulty } from '../enums/difficulty';
-// import MenuContent from './MenuContent';
-import { Text, View, TouchableHighlight, Modal } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
+import MenuContent from './MenuContent';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -32,12 +32,12 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }}  disabled={true}>
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                    <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} >
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
                     </TouchableHighlight>
                 </View>
@@ -47,7 +47,6 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
             </View>
-            {/* <View className='backgroundExtender'></View> */}
             {/* <LevelDifficulty showPopup={this.state.showNewLevelPopup}
                 onCloseClick={() => this.OnLevelDifficultyCloseClick()}
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
@@ -56,60 +55,45 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 popupWidth={this.state.popupWidth}
                 title='Difficulty'
             ></LevelDifficulty> */}
-            {/* <MenuContent
+            <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Instructions'
                 showPopup={this.state.showInstructionsPopup}
-                popupWidth={this.state.popupWidth}
             >
-                <View className='desktopInstructions'>
-                    <ul>
-                        <li><Text>Right click on any block to mark a mine.</Text></li>
-                        <li><Text>There are three types of mines, each type has a different power.</Text></li>
-                        <li><Text>To switch to a different mine, right click on the same block multiple times.</Text></li>
-                        <li><Text>The goal is to locate all the mines.</Text></li>
-                        <li><Text>Small=1 Medium=2 Large=3</Text></li>
-                    </ul>
+                <View >
+                    <FlatList
+                        data={[
+                            { key: '\u2022 Tap and hold on any block to mark a mine.' },
+                            { key: '\u2022 There are three types of mines, each type has a different power.' },
+                            { key: '\u2022 To switch to a different mine, tab and hold on the same block multiple times.' },
+                            { key: '\u2022 The goal is to locate all the mines.' },
+                            { key: '\u2022 Small=1 Medium=2 Large=3' },
+                        ]}
+                        renderItem={({ item }) => <Text>{item.key}</Text>}
+                    />
                 </View>
-                <View className='phoneInstructions'>
-                    <ul>
-                        <li><Text>Tap and hold on any block to mark a mine.</Text></li>
-                        <li><Text>There are three types of mines, each type has a different power.</Text></li>
-                        <li><Text>To switch to a different mine, tab and hold on the same block multiple times.</Text></li>
-                        <li><Text>The goal is to locate all the mines.</Text></li>
-                        <li><Text>Small=1 Medium=2 Large=3</Text></li>
-                    </ul>
-                </View>
+
             </MenuContent>
 
             <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Credits'
                 showPopup={this.state.showCreditsPopup}
-                popupWidth={this.state.popupWidth}
             >
-            */}
-
-            <Modal
-                animationType="slide"
-                transparent={false}
-                visible={this.state.showCreditsPopup}
-                onRequestClose={() => this.onMenuContentCloseClick()}>
-                <View>
-                    <Text >
-                        Programming
+                <Text >
+                    Programming
                      </Text>
-                    <Text>
-                        Walid Sultan
+                <Text>
+                    Walid Sultan
                     </Text>
-                    <Text >
-                        Graphic Design
+                <Text >
+                    Graphic Design
                 </Text>
-                    <Text >
-                        Shady Sultan
+                <Text >
+                    Shady Sultan
                   </Text>
-                </View>
-            </Modal>
+            </MenuContent>
+
         </View >;
     }
 

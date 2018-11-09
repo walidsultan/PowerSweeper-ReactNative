@@ -333,7 +333,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         onOkClick={() => this.onAlertOkClick()}
                                         onCancelClick={() => this.onAlertCancel()}
                                         onCloseClick={() => this.onAlertClose()}
-                                        popupWidth={this.boardState.alertState.alertWidth}
                                 ></Alert>
                         </div>
                 );

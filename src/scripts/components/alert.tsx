@@ -11,7 +11,6 @@ export default class Alert extends React.Component<AlertInterface, {}> {
     render() {
         return (
             <Popup showPopup={this.props.showPopup}
-                popupWidth={this.props.popupWidth}
                 title={this.props.title}
                 onCloseClick={() => this.props.onCloseClick()}
             >
