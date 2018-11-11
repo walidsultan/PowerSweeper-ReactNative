@@ -1,9 +1,10 @@
 import * as React from 'react';
 import BlockInterface from '../interfaces/BlockInterface';
-import { CSSProperties } from 'react';
 import BlockState from '../states/BlockState';
 import { MineType } from '../enums/mineType';
-// import '../../css/block.less';
+import { TouchableHighlight, Text, Vibration, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType } from 'react-native';
+import { array } from 'prop-types';
+import BlockStyles from '../../styles/blockStyles';
 
 export default class Block extends React.Component<BlockInterface, BlockState> {
 
@@ -19,36 +20,44 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
   }
   render() {
     let blockOffset = this.props.BlockSize * (1 - this.blockShrinkRatio) / 2;
-    let styles: CSSProperties = {
+    let buttonStyle: StyleProp<TextStyle> = {
       top: blockOffset + this.props.Top * this.props.BlockSize,
       left: blockOffset + this.props.Left * this.props.BlockSize,
       width: this.props.BlockSize * this.blockShrinkRatio,
       height: this.props.BlockSize * this.blockShrinkRatio,
-      backgroundSize: this.props.BlockSize * this.blockShrinkRatio,
-      fontSize: this.props.BlockSize * this.fontRatio
+      //  fontSize: this.props.BlockSize * this.fontRatio,
     };
 
-    this.isChrome = this.isChromeBrowser();
-    let classNames: [string] = this.getClassNames();
+    let imageStyle: StyleProp<ImageStyle> = {
+      width: buttonStyle.width,
+      height: buttonStyle.height
+    }
+
+    let styles = this.getBlockStyles();
+    styles.push(buttonStyle);
+
+    if (this.props.IsClicked && this.props.HasMine) {
+      styles.push(BlockStyles.clickedMine);
+    }
+
+    let blockContent;
+    if (this.props.MarkedState > 0) {
+      blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
+    } else {
+      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
+    }
+
     return (
-      <div
-        className={classNames.join(' ')}
-        style={styles}
-        onClick={() => this.onLeftClick()}
-        onContextMenu={(e) => this.onRightClick(e)}
-        onTouchStart={(e) => this.onTouchStart(e)}
-        onTouchEnd={(e) => this.onTouchEnd(e)}
-      >{(this.props.IsClicked && this.props.Value > 0 && <div>{this.props.Value}</div>)}</div>
+      <TouchableHighlight onPress={() => this.onLeftClick()} onLongPress={() => this.onRightClick()} style={styles} underlayColor='#ddd'>
+        {blockContent}
+      </TouchableHighlight>
     );
   }
 
-  isChromeBrowser() {
-    return /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-  }
   onTouchStart(_e: any) {
     if (!this.isBlockTouched || !this.isChrome) {
       this.isBlockTouched = true;
-      this.blockTimer = setTimeout(() => { this.onRightClick(undefined); }, 500);
+      this.blockTimer = setTimeout(() => { this.onRightClick(); }, 500);
     }
   }
 
@@ -57,22 +66,10 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     this.isBlockTouched = false;
   }
 
-  onRightClick(e: any) {
-    if (e != undefined && this.isBlockTouched) {
-      return;
-    }
-
-    if (e != undefined) {
-      e.preventDefault();
-    }
-    if (e != undefined || this.isBlockTouched) {
-      window.navigator.vibrate(100);
-      if (!this.props.IsClicked) {
-        this.props.onContextMenu();
-      }
-      if (this.isBlockTouched && this.isChrome) {
-        this.blockTimer = setTimeout(() => { this.onRightClick(undefined); }, 500);
-      }
+  onRightClick() {
+    Vibration.vibrate(100, false);
+    if (!this.props.IsClicked) {
+      this.props.onContextMenu();
     }
   }
 
@@ -82,33 +79,27 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
   }
 
-  getClassNames(): [string] {
-    let classNames: [string] = ['block'];
-    if (this.props.IsClicked) {
-      classNames.push('clicked');
-    }
-
-    if (this.props.IsClicked && this.props.HasMine) {
-      classNames.push('clickedMine');
-    }
-    switch (this.props.MarkedState) {
+  getMineImagePath(mineType: MineType): ImageSourcePropType {
+    switch (mineType) {
       case MineType.Large:
-        classNames.push('bigMine');
-        break;
+        return require('../../../assets/images/BigMine.png');
       case MineType.Medium:
-        classNames.push('mediumMine');
-        break;
+        return require('../../../assets/images/MediumMine.png');
       case MineType.Small:
-        classNames.push('smallMine');
-        break;
+        return require('../../../assets/images/SmallMine.png');
       default:
-        classNames.push('');
-        break;
+        return null;
     }
+  }
 
-    if (this.props.MarkedState > 0) {
-      classNames.push('marked');
+  getBlockStyles(): any[] {
+    let styles: any[] = new Array(0);
+    styles.push(BlockStyles.block);
+
+    if (this.props.IsClicked) {
+      styles.push(BlockStyles.clicked);
     }
-    return classNames;
+ 
+    return styles;
   }
 }

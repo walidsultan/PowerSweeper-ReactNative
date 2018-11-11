@@ -9,6 +9,7 @@ import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import AlertState from '../states/AlertState';
 import { PageView } from '../enums/pageView';
+import { View, Dimensions, Vibration } from 'react-native';
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -38,7 +39,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.AddMines(this.props.smallMinesCount, MineType.Small);
                 this.AddMines(this.props.mediumMinesCount, MineType.Medium);
                 this.AddMines(this.props.bigMinesCount, MineType.Large);
-                console.log(this.mines);
                 this.initializeValues();
         }
 
@@ -94,7 +94,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         }
                                 }
                                 boardState.blocks[left][top].IsClicked = true;
-                                window.navigator.vibrate([30, 50, 100, 60, 40, 140]);
+                                Vibration.vibrate([30, 50, 100, 60, 40, 140],false);
 
                         } else {
                                 // make sure the first click is not a mine
@@ -214,7 +214,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 // Add blocks
                 for (let row of this.boardState.blocks) {
                         for (let block of row) {
-                                puzzle.push(<Block
+                                puzzle.push(<Block key={block.Left + 'ID' + block.Top}
                                         Left={block.Left}
                                         Top={block.Top}
                                         BlockSize={this.boardState.blockSize}
@@ -235,8 +235,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         if (this.checkIfLevelIsSolved()) {
                                 let newState = Object.assign(this.state, { alertState: { showAlert: true } });
                                 this.boardState.alertState.showAlert = true;
-                                this.boardState.alertState.alertTitle = 'Puzzle Solved Successfully';
-                                this.boardState.alertState.alertMessage = 'Congratulations! Play again?';
+                                this.boardState.alertState.alertTitle = 'Congrats!';
+                                this.boardState.alertState.alertMessage = 'You did it! Play again?';
                                 this.setState(newState);
                         }
 
@@ -256,29 +256,24 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         componentDidMount() {
-                window.addEventListener('resize', this.updateDimensions);
+
                 this.updateDimensions();
         }
 
         updateDimensions() {
                 // set frame width
-                let frameScaleFactor = 0.9065;   // 1000 / 1048 * .95;
-                let puzzleScaleFactor = 0.837;
 
-                if (this.isMobileDimensions()) {
-                        frameScaleFactor = 1;
-                        puzzleScaleFactor = 1;
-                        this.boardState.frameSize = Math.min(window.innerWidth, window.innerHeight);
-                } else {
-                        this.boardState.frameSize = window.innerHeight * frameScaleFactor ;
-                }
+                let innerWidth = Dimensions.get('window').width;
+                let innerHeight = Dimensions.get('window').height;
 
-                if (this.boardState.frameSize > window.innerWidth) {
-                        this.boardState.frameSize = window.innerWidth;
+                this.boardState.frameSize = Math.min(innerWidth, innerHeight);
+
+                if (this.boardState.frameSize > innerWidth) {
+                        this.boardState.frameSize = innerWidth;
                 }
 
                 // Set block size
-                this.boardState.blockSize = this.calculateBlockSize(puzzleScaleFactor);
+                this.boardState.blockSize = this.calculateBlockSize(1);
 
                 // Assign new state
                 let newState = Object.assign(this.boardState, { blockSize: this.boardState.blockSize });
@@ -300,31 +295,31 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.props.onRedirect(PageView.Menu);
         }
 
-        isMobileDimensions() {
-                return (window.innerWidth <= 640 || window.innerHeight <= 700);
-        }
-
         render() {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
+                let boardStyle = {
+                        flex: 1
+                };
                 let frameStyle = {
-                        width: this.boardState.frameSize
+                        flex: 1
                 };
 
-                let puzzleStyle = {};
-                if (this.isMobileDimensions()) {
-                        frameStyle = Object.assign(frameStyle, { height: this.boardState.frameSize });
-                        puzzleStyle = Object.assign(puzzleStyle, {top: (window.innerHeight - this.boardState.frameSize) / 2 });
-                }
+                let puzzleStyle = {
+                        flex: 1,
+                        backgroundColor: '#999'
+                };
+
 
                 return (
-                        <div className='board noselect'>
-                                <div className='frame' style={frameStyle} onContextMenu={(e) => e.preventDefault()}>
-                                        <div className='puzzle' ref={this.puzzleRef} style={puzzleStyle}>
-                                                {puzzle}
-                                        </div>
+                        <View style={boardStyle}>
+                                <View style={frameStyle} >
 
-                                </div>
+                                        <View ref={this.puzzleRef} style={puzzleStyle}>
+                                                {puzzle}
+                                        </View>
+
+                                </View>
 
                                 <Alert title={this.boardState.alertState.alertTitle}
                                         showPopup={this.boardState.alertState.showAlert}
@@ -333,7 +328,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         onCancelClick={() => this.onAlertCancel()}
                                         onCloseClick={() => this.onAlertClose()}
                                 ></Alert>
-                        </div>
+                        </View>
                 );
         }
 

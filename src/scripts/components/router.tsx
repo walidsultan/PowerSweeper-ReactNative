@@ -9,12 +9,9 @@ import Board from './board';
 import { View, StyleProp, ViewStyle } from 'react-native';
 
 export default class Router extends React.Component<RouterInterface, RouterState> {
-    private routerRef: any;
-
     constructor(props: any) {
         super(props);
         this.state = new RouterState();
-        this.routerRef = React.createRef();
     }
     render() {
         let routerStyle: StyleProp<ViewStyle> = {
@@ -46,13 +43,10 @@ export default class Router extends React.Component<RouterInterface, RouterState
     getPuzzleByDifficulty() {
         switch (this.state.levelDifficulty) {
             case Difficulty.Easy:
-                // tslint:disable-next-line:max-line-length
                 return <Board bigMinesCount={1} mediumMinesCount={2} smallMinesCount={3} levelHeight={7} levelWidth={7} onRedirect={(pv: any) => this.onRedirect(pv)} />;
             case Difficulty.Medium:
-                // tslint:disable-next-line:max-line-length
                 return <Board bigMinesCount={3} mediumMinesCount={5} smallMinesCount={7} levelHeight={10} levelWidth={10} onRedirect={(pv: any) => this.onRedirect(pv)} />;
             case Difficulty.Hard:
-                // tslint:disable-next-line:max-line-length
                 return <Board bigMinesCount={6} mediumMinesCount={10} smallMinesCount={14} levelHeight={15} levelWidth={15} onRedirect={(pv: any) => this.onRedirect(pv)} />;
             default:
                 return <div></div>;
@@ -79,7 +73,7 @@ export default class Router extends React.Component<RouterInterface, RouterState
     }
 
     componentDidUpdate() {
-        this.routerRef.current.focus();
+       // this.routerRef.current.focus();
     }
 
 }
