@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Popup from './popup';
 import AlertInterface from '../interfaces/AlertInterface';
-import { View, Button, Text, TouchableHighlight } from 'react-native';
+import { View, Text, TouchableHighlight } from 'react-native';
 import AlertStyles from '../../styles/alertStyles';
 
 export default class Alert extends React.Component<AlertInterface, {}> {
@@ -18,10 +18,10 @@ export default class Alert extends React.Component<AlertInterface, {}> {
                 <View style={AlertStyles.alertContainer}>
                     <View ><Text>{this.props.message}</Text></View>
                     <View style={AlertStyles.buttonsContainer}>
-                        <TouchableHighlight onPress={() => this.props.onOkClick()} style={AlertStyles.button}>
+                        <TouchableHighlight onPress={() => this.props.onOkClick()} style={AlertStyles.button} underlayColor='#4db8ff'>
                             <Text style={AlertStyles.buttonText}>OK</Text>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={() => this.props.onCancelClick()} style={[AlertStyles.button,AlertStyles.cancel]}>
+                        <TouchableHighlight onPress={() => this.props.onCancelClick()} style={[AlertStyles.button,AlertStyles.cancel]} underlayColor='#b3b3b3'>
                             <Text style={AlertStyles.buttonText}>Cancel</Text>
                         </TouchableHighlight>
                     </View>

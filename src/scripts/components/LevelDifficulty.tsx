@@ -18,14 +18,14 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
                 onCloseClick={() => this.props.onCloseClick()}
             >
                 <View style={LevelDifficultyStyles.container}>
-                    <TouchableHighlight onPress={() => { this.props.onEasyLevelClick(); }} >
-                        <Text style={LevelDifficultyStyles.button}>Easy</Text>
+                    <TouchableHighlight onPress={() => { this.props.onEasyLevelClick(); }} style={LevelDifficultyStyles.button} underlayColor='#eee'>
+                        <Text style={LevelDifficultyStyles.buttonText}>Easy</Text>
                     </TouchableHighlight>
-                    <TouchableHighlight onPress={() => { this.props.onMediumLevelClick(); }} >
-                        <Text style={LevelDifficultyStyles.button}>Meduim</Text>
+                    <TouchableHighlight onPress={() => { this.props.onMediumLevelClick(); }} style={LevelDifficultyStyles.button} underlayColor='#eee'>
+                        <Text style={LevelDifficultyStyles.buttonText}>Meduim</Text>
                     </TouchableHighlight>
-                    <TouchableHighlight onPress={() => { this.props.onHardLevelClick(); }} >
-                        <Text style={LevelDifficultyStyles.button}>Hard</Text>
+                    <TouchableHighlight onPress={() => { this.props.onHardLevelClick(); }} style={LevelDifficultyStyles.button} underlayColor='#eee'>
+                        <Text style={LevelDifficultyStyles.buttonText}>Hard</Text>
                     </TouchableHighlight>
                 </View>
             </Popup>

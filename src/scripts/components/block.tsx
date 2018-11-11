@@ -3,16 +3,15 @@ import BlockInterface from '../interfaces/BlockInterface';
 import BlockState from '../states/BlockState';
 import { MineType } from '../enums/mineType';
 import { TouchableHighlight, Text, Vibration, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType } from 'react-native';
-import { array } from 'prop-types';
 import BlockStyles from '../../styles/blockStyles';
 
 export default class Block extends React.Component<BlockInterface, BlockState> {
 
   private blockShrinkRatio: number = 0.8525;
-  private fontRatio: number = 0.3;
+  //private fontRatio: number = 0.3;
   private blockTimer: any;
   private isBlockTouched: boolean;
-  private isChrome: boolean;
+  private isLongTouch: boolean;
   constructor(props: any) {
     super(props);
 
@@ -48,20 +47,21 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
 
     return (
-      <TouchableHighlight onPress={() => this.onLeftClick()} onLongPress={() => this.onRightClick()} style={styles} underlayColor='#ddd'>
+      <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={()=>this.onTouchEnd()} style={styles} underlayColor='#ddd'>
         {blockContent}
       </TouchableHighlight>
     );
   }
 
-  onTouchStart(_e: any) {
-    if (!this.isBlockTouched || !this.isChrome) {
+  onTouchStart() {
+    if (!this.isBlockTouched) {
       this.isBlockTouched = true;
-      this.blockTimer = setTimeout(() => { this.onRightClick(); }, 500);
+      this.isLongTouch= false;
+      this.blockTimer = setTimeout(() => { this.onRightClick(); this.isLongTouch= true;}, 500);
     }
   }
 
-  onTouchEnd(_e: any) {
+  onTouchEnd() {
     clearTimeout(this.blockTimer);
     this.isBlockTouched = false;
   }
@@ -71,10 +71,13 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     if (!this.props.IsClicked) {
       this.props.onContextMenu();
     }
+    if(this.isBlockTouched){
+      this.blockTimer = setTimeout(() => { this.onRightClick() }, 500);
+   }
   }
 
   onLeftClick() {
-    if (!this.props.IsClicked) {
+    if (!this.props.IsClicked && !this.isLongTouch) {
       this.props.onClick();
     }
   }

@@ -8,15 +8,17 @@ const LevelDifficultyStyles = StyleSheet.create({
         flex:1
     },
     button:{
-        fontFamily: 'funkyFont',
-        fontWeight: '400',
         borderRadius: 50,
         borderWidth: 1.5,
         borderColor: '#222',
-        fontSize: 45,
         padding: 20,
         justifyContent: 'center',
         marginBottom:20
+    },
+    buttonText:{
+        fontFamily: 'funkyFont',
+        fontWeight: '400',
+        fontSize: 45
     }
 });
 
