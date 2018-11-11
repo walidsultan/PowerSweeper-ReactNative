@@ -10,6 +10,7 @@ import Alert from './Alert';
 import AlertState from '../states/AlertState';
 import { PageView } from '../enums/pageView';
 import { View, Dimensions, Vibration } from 'react-native';
+import BoardStyles from '../../styles/boardStyles';
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -94,7 +95,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         }
                                 }
                                 boardState.blocks[left][top].IsClicked = true;
-                                Vibration.vibrate([30, 50, 100, 60, 40, 140],false);
+                                Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
 
                         } else {
                                 // make sure the first click is not a mine
@@ -298,27 +299,15 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         render() {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
-                let boardStyle = {
-                        flex: 1
+                let puzzlePosition = {
+                        top: (Dimensions.get('window').height - this.props.levelHeight * this.boardState.blockSize) / 2
                 };
-                let frameStyle = {
-                        flex: 1
-                };
-
-                let puzzleStyle = {
-                        flex: 1,
-                        backgroundColor: '#999'
-                };
-
-
                 return (
-                        <View style={boardStyle}>
-                                <View style={frameStyle} >
-
-                                        <View ref={this.puzzleRef} style={puzzleStyle}>
+                        <View style={BoardStyles.board}>
+                                <View style={BoardStyles.frame} >
+                                        <View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
                                         </View>
-
                                 </View>
 
                                 <Alert title={this.boardState.alertState.alertTitle}
