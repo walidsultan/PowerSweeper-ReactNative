@@ -9,30 +9,32 @@ import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import AlertState from '../states/AlertState';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, Text, PanResponderGestureState } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
+import BlockPosition from '../types/blockPosition';
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
         private isAnyBlockClicked = false;
-        private boardState: BoardState;
         private shouldCheckIfLevelIsSolved = false;
         private isMineClicked: boolean = false;
         private puzzleRef: any;
+        private panResponder: any;
+        private lastPinchDistance: number;
 
         constructor(props: any) {
                 super(props);
-                this.boardState = new BoardState();
-                this.boardState.alertState = new AlertState();
 
-                this.loadLevel();
+                var blocks = this.loadLevel();
 
                 this.puzzleRef = React.createRef();
 
                 this.updateDimensions = this.updateDimensions.bind(this);
+
+                this.state = new BoardState(blocks);
         }
 
-        loadLevel() {
+        loadLevel(): BlockType[][] {
                 this.isMineClicked = false;
                 this.isAnyBlockClicked = false;
                 this.initializeMines();
@@ -40,14 +42,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.AddMines(this.props.smallMinesCount, MineType.Small);
                 this.AddMines(this.props.mediumMinesCount, MineType.Medium);
                 this.AddMines(this.props.bigMinesCount, MineType.Large);
-                this.initializeValues();
+                return this.initializeValues();
         }
 
-        calculateBlockSize(scaleFactor: number): number {
-                return (this.boardState.frameSize) / this.props.levelWidth * scaleFactor;
+        calculateBlockSize(zoomFactor: number): number {
+                return Dimensions.get('window').width / this.props.levelWidth * zoomFactor;
         }
 
-        initializeValues() {
+        initializeValues(): BlockType[][] {
                 let blockStates: BlockType[][] = [];
 
                 for (let i = 0; i < this.props.levelWidth; i++) {
@@ -62,7 +64,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 blockStates[i][j].IsClicked = false;
                         }
                 }
-                this.boardState.blocks = blockStates;
+                return blockStates;
         }
 
         initializeMines() {
@@ -79,7 +81,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         handleBlockClick(left: number, top: number) {
-                let boardState = this.boardState;
+                let boardState = this.state;
                 if (boardState.blocks[left][top].HasMine) {
                         if (this.isAnyBlockClicked) {
                                 this.isMineClicked = true;
@@ -115,7 +117,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         pushBlock(blocks: BlockPointer[], left: number, top: number) {
-                if (!this.boardState.blocks[left][top].IsClicked) {
+                if (!this.state.blocks[left][top].IsClicked) {
                         blocks.push({ Position: { X: left, Y: top }, Value: this.mines[left][top] });
                 }
         }
@@ -169,20 +171,20 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         handleRightClick(left: number, top: number) {
                 if (!this.isMineClicked) {
-                        let blocksStates = this.boardState.blocks;
+                        let blocksStates = this.state.blocks;
                         if (blocksStates[left][top].MarkedState === MineType.Large) {
                                 blocksStates[left][top].MarkedState = 0;
                         } else {
                                 blocksStates[left][top].MarkedState++;
                         }
-                        this.setState({ blocks: blocksStates });
+                        this.setState(Object.assign(this.state, { blocks: blocksStates }));
                         this.shouldCheckIfLevelIsSolved = true;
                 }
         }
 
         checkIfLevelIsSolved(): boolean {
                 let mismatch = false;
-                for (let row of this.boardState.blocks) {
+                for (let row of this.state.blocks) {
                         for (let block of row) {
                                 if (block.HasMine && block.MarkedState !== block.Mine) {
                                         mismatch = true;
@@ -213,12 +215,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let puzzle = [];
 
                 // Add blocks
-                for (let row of this.boardState.blocks) {
+                for (let row of this.state.blocks) {
                         for (let block of row) {
                                 puzzle.push(<Block key={block.Left + 'ID' + block.Top}
                                         Left={block.Left}
                                         Top={block.Top}
-                                        BlockSize={this.boardState.blockSize}
+                                        BlockSize={this.state.blockSize}
                                         onClick={() => this.handleBlockClick(block.Left, block.Top)}
                                         onContextMenu={() => this.handleRightClick(block.Left, block.Top)}
                                         Value={block.Value}
@@ -235,9 +237,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (this.shouldCheckIfLevelIsSolved) {
                         if (this.checkIfLevelIsSolved()) {
                                 let newState = Object.assign(this.state, { alertState: { showAlert: true } });
-                                this.boardState.alertState.showAlert = true;
-                                this.boardState.alertState.alertTitle = 'Congrats!';
-                                this.boardState.alertState.alertMessage = 'You did it! Play again?';
+                                this.state.alertState.showAlert = true;
+                                this.state.alertState.alertTitle = 'Congrats!';
+                                this.state.alertState.alertMessage = 'You did it! Play again?';
                                 this.setState(newState);
                         }
 
@@ -245,47 +247,111 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 }
 
                 if (this.isMineClicked) {
-
                         let newState = Object.assign(this.state, { alertState: { showAlert: true } });
-                        this.boardState.alertState.showAlert = true;
-                        this.boardState.alertState.alertTitle = 'Game Over';
-                        this.boardState.alertState.alertMessage = 'You clicked on a mine. Play again?';
+                        this.state.alertState.showAlert = true;
+                        this.state.alertState.alertTitle = 'Game Over';
+                        this.state.alertState.alertMessage = 'You clicked on a mine. Play again?';
                         this.setState(newState);
                         this.isMineClicked = false;
                 }
-
         }
 
         componentDidMount() {
-
                 this.updateDimensions();
         }
 
-        updateDimensions() {
-                // set frame width
+        componentWillMount() {
+                this.panResponder = PanResponder.create({
+                        onMoveShouldSetPanResponderCapture: (e, gestureState) => {
+                                if (e.nativeEvent.touches.length > 1) {
+                                        return true;
+                                } else {
+                                        if (gestureState.dx > 0 || gestureState.dy > 0) {
+                                                return true;
+                                        } else {
+                                                return false;
+                                        }
+                                }
+                        },
 
-                let innerWidth = Dimensions.get('window').width;
-                let innerHeight = Dimensions.get('window').height;
+                        // Initially, set the value of x and y to 0 (the center of the screen)
+                        onPanResponderGrant: (e, gestureState) => {
 
-                this.boardState.frameSize = Math.min(innerWidth, innerHeight);
+                        },
 
-                if (this.boardState.frameSize > innerWidth) {
-                        this.boardState.frameSize = innerWidth;
+                        // When we drag/pan the object, set the delate to the states pan position
+                        onPanResponderMove: (e, gestureState) => {
+                                let touches = e.nativeEvent.touches;
+                                if (touches.length == 2) {
+
+                                        this.processPinch(touches[0].pageX, touches[0].pageY,
+                                                touches[1].pageX, touches[1].pageY);
+                                } else {
+
+                                        this.processDrag(gestureState);
+                                }
+
+                        },
+
+                        onPanResponderRelease: (e, gestureState) => {
+                                this.lastPinchDistance = undefined;
+                        }
+                });
+        }
+
+        processDrag(gesture: PanResponderGestureState) {
+                let puzzlePositionOffset = this.state.puzzlePositionOffset;
+                puzzlePositionOffset.X += gesture.dx;
+                puzzlePositionOffset.Y += gesture.dy;
+
+                let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1- this.state.zoomFactor);
+                let maxYDisplacement = Math.max(0, this.state.blockSize * this.props.levelHeight - Dimensions.get('window').height);
+
+                puzzlePositionOffset.X = Math.min(0, Math.max(puzzlePositionOffset.X, maxXDisplacement));
+                puzzlePositionOffset.Y = Math.sign(puzzlePositionOffset.Y) * Math.min(Math.abs(puzzlePositionOffset.Y), maxYDisplacement)
+                this.setState(Object.assign(this.state, { puzzlePositionOffset: puzzlePositionOffset }));
+        }
+
+        processPinch(x1: number, y1: number, x2: number, y2: number) {
+                let pinchDistance = this.calcDistance(x1, y1, x2, y2);
+
+                if (this.lastPinchDistance) {
+                        let zoomFactor = this.state.zoomFactor;
+                        let zoomDifferential = Math.abs(pinchDistance - this.lastPinchDistance) / this.lastPinchDistance;
+                        if (pinchDistance < this.lastPinchDistance) {
+                                zoomFactor -= zoomDifferential;
+                                if (zoomFactor < 1) { zoomFactor = 1; }
+                        } else {
+                                zoomFactor += zoomDifferential;
+                        }
+
+                        let blockSize = this.calculateBlockSize(zoomFactor);
+
+                        this.setState(Object.assign(this.state, { blockSize: blockSize, zoomFactor: zoomFactor }));
                 }
+                this.lastPinchDistance = pinchDistance;
 
+        }
+
+        calcDistance(x1: number, y1: number, x2: number, y2: number) {
+                let dx = Math.abs(x1 - x2)
+                let dy = Math.abs(y1 - y2)
+                return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        }
+
+        updateDimensions() {
                 // Set block size
-                this.boardState.blockSize = this.calculateBlockSize(1);
+                let blockSize = this.calculateBlockSize(this.state.zoomFactor);
 
                 // Assign new state
-                let newState = Object.assign(this.boardState, { blockSize: this.boardState.blockSize });
+                let newState = Object.assign(this.state, { blockSize: blockSize });
                 this.setState(newState);
         }
 
         onAlertOkClick() {
-                let newState = Object.assign(this.state, { alertState: { showAlert: false } });
-                this.boardState.alertState.showAlert = false;
+                var blocks = this.loadLevel();
+                let newState = Object.assign(this.state, { blocks: blocks, alertState: { showAlert: false } });
                 this.setState(newState);
-                this.loadLevel();
         }
 
         onAlertClose() {
@@ -300,19 +366,20 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
                 let puzzlePosition = {
-                        top: (Dimensions.get('window').height - this.props.levelHeight * this.boardState.blockSize) / 2
+                        top: (Dimensions.get('window').height - this.props.levelHeight * this.state.blockSize) / 2 + this.state.puzzlePositionOffset.Y,
+                        left: this.state.puzzlePositionOffset.X
                 };
                 return (
-                        <View style={BoardStyles.board}>
+                        <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
                                 <View style={BoardStyles.frame} >
                                         <View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
                                         </View>
                                 </View>
 
-                                <Alert title={this.boardState.alertState.alertTitle}
-                                        showPopup={this.boardState.alertState.showAlert}
-                                        message={this.boardState.alertState.alertMessage}
+                                <Alert title={this.state.alertState.alertTitle}
+                                        showPopup={this.state.alertState.showAlert}
+                                        message={this.state.alertState.alertMessage}
                                         onOkClick={() => this.onAlertOkClick()}
                                         onCancelClick={() => this.onAlertCancel()}
                                         onCloseClick={() => this.onAlertClose()}
