@@ -5,13 +5,10 @@ import { MineType } from '../enums/mineType';
 import BoardState from '../states/BoardState';
 import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
-// import '../../css/board.less';
 import Alert from './Alert';
-import AlertState from '../states/AlertState';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, Text, PanResponderGestureState } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
-import BlockPosition from '../types/blockPosition';
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -263,19 +260,22 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         componentWillMount() {
                 this.panResponder = PanResponder.create({
                         onMoveShouldSetPanResponderCapture: (e, gestureState) => {
+                                
+
                                 if (e.nativeEvent.touches.length > 1) {
                                         return true;
                                 } else {
-                                        if (gestureState.dx > 0 || gestureState.dy > 0) {
+                                        if (Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy)> 10) {
                                                 return true;
                                         } else {
                                                 return false;
                                         }
                                 }
+                              
                         },
 
                         // Initially, set the value of x and y to 0 (the center of the screen)
-                        onPanResponderGrant: (e, gestureState) => {
+                        onPanResponderGrant: () => {
 
                         },
 
@@ -291,9 +291,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         this.processDrag(gestureState);
                                 }
 
+                                // let trace= 'dx: ' + Math.round(gestureState.dx )+' dy: ' +Math.round( gestureState.dy) +' vx: ' + Math.round(gestureState.vx)+' vy: ' + Math.round(gestureState.vy);
+                                // this.setState(Object.assign(this.state, { panTrace: trace }));
+
                         },
 
-                        onPanResponderRelease: (e, gestureState) => {
+                        onPanResponderRelease: () => {
                                 this.lastPinchDistance = undefined;
                         }
                 });
@@ -301,10 +304,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         processDrag(gesture: PanResponderGestureState) {
                 let puzzlePositionOffset = this.state.puzzlePositionOffset;
-                puzzlePositionOffset.X += gesture.dx;
-                puzzlePositionOffset.Y += gesture.dy;
+                puzzlePositionOffset.X += gesture.dx *.2;
+                puzzlePositionOffset.Y += gesture.dy *.2;
 
-                let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1- this.state.zoomFactor);
+                let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1/this.state.zoomFactor - 1);
                 let maxYDisplacement = Math.max(0, this.state.blockSize * this.props.levelHeight - Dimensions.get('window').height);
 
                 puzzlePositionOffset.X = Math.min(0, Math.max(puzzlePositionOffset.X, maxXDisplacement));

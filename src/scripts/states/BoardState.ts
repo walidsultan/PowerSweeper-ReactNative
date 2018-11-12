@@ -15,4 +15,6 @@ export default class BoardState {
     alertState: AlertState;
     zoomFactor: number=1;
     puzzlePositionOffset:BlockPosition;
+
+    panTrace:string;
 }
