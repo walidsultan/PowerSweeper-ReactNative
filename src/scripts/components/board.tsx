@@ -7,8 +7,9 @@ import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
+import BlockPosition from '../types/blockPosition';
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -18,6 +19,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private puzzleRef: any;
         private panResponder: any;
         private lastPinchDistance: number;
+        private puzzlePositionOffset:BlockPosition = new BlockPosition();
+        private initialPuzzleTopOffset:number;
 
         constructor(props: any) {
                 super(props);
@@ -28,6 +31,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.updateDimensions = this.updateDimensions.bind(this);
 
+                
                 this.state = new BoardState(blocks);
         }
 
@@ -303,16 +307,16 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         processDrag(gesture: PanResponderGestureState) {
-                let puzzlePositionOffset = this.state.puzzlePositionOffset;
-                puzzlePositionOffset.X += gesture.dx *.2;
-                puzzlePositionOffset.Y += gesture.dy *.2;
+                this.puzzlePositionOffset.X += gesture.dx *.2;
+                this.puzzlePositionOffset.Y += gesture.dy *.2;
 
                 let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1/this.state.zoomFactor - 1);
-                let maxYDisplacement = Math.max(0, this.state.blockSize * this.props.levelHeight - Dimensions.get('window').height);
+                let maxYDisplacement = Math.max(this.initialPuzzleTopOffset, this.state.blockSize * this.props.levelHeight - Dimensions.get('window').height);
 
-                puzzlePositionOffset.X = Math.min(0, Math.max(puzzlePositionOffset.X, maxXDisplacement));
-                puzzlePositionOffset.Y = Math.sign(puzzlePositionOffset.Y) * Math.min(Math.abs(puzzlePositionOffset.Y), maxYDisplacement)
-                this.setState(Object.assign(this.state, { puzzlePositionOffset: puzzlePositionOffset }));
+                this.puzzlePositionOffset.X = Math.min(0, Math.max(this.puzzlePositionOffset.X, maxXDisplacement));
+                this.puzzlePositionOffset.Y = Math.sign(this.puzzlePositionOffset.Y) * Math.min(Math.abs(this.puzzlePositionOffset.Y), maxYDisplacement);
+                
+                Animated.spring(this.state.puzzlePositionOffset,{toValue: {x:this.puzzlePositionOffset.X,y:this.puzzlePositionOffset.Y} }).start();
         }
 
         processPinch(x1: number, y1: number, x2: number, y2: number) {
@@ -330,6 +334,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                         let blockSize = this.calculateBlockSize(zoomFactor);
 
+                        //centralize puzzle position
+                        let offsetX= - ( blockSize * this.props.levelWidth - Dimensions.get('window').width)/2;
+                        let offsetY= - ( blockSize * this.props.levelHeight - Dimensions.get('window').height)/2;
+
+                        this.state.puzzlePositionOffset.setValue({x:offsetX,y:offsetY});
+
                         this.setState(Object.assign(this.state, { blockSize: blockSize, zoomFactor: zoomFactor }));
                 }
                 this.lastPinchDistance = pinchDistance;
@@ -345,6 +355,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         updateDimensions() {
                 // Set block size
                 let blockSize = this.calculateBlockSize(this.state.zoomFactor);
+
+                this.initialPuzzleTopOffset = (Dimensions.get('window').height - this.props.levelHeight * blockSize) / 2;
+                Animated.spring(this.state.puzzlePositionOffset,{toValue:{x:0, y: this.initialPuzzleTopOffset},mass:5}).start();
 
                 // Assign new state
                 let newState = Object.assign(this.state, { blockSize: blockSize });
@@ -369,15 +382,15 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
                 let puzzlePosition = {
-                        top: (Dimensions.get('window').height - this.props.levelHeight * this.state.blockSize) / 2 + this.state.puzzlePositionOffset.Y,
-                        left: this.state.puzzlePositionOffset.X
+                        top: this.state.puzzlePositionOffset.y,
+                        left: this.state.puzzlePositionOffset.x
                 };
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
                                 <View style={BoardStyles.frame} >
-                                        <View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
+                                        <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
-                                        </View>
+                                        </Animated.View>
                                 </View>
 
                                 <Alert title={this.state.alertState.alertTitle}
