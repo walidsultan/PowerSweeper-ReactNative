@@ -22,7 +22,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private puzzlePositionOffset: BlockPosition = new BlockPosition();
         private initialPuzzleTopOffset: number;
         private centerPosition: BlockPosition;
-        private isInPinchMode:boolean =false;
+        private isInPinchMode: boolean = false;
 
         constructor(props: any) {
                 super(props);
@@ -289,11 +289,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         onPanResponderMove: (e, gestureState) => {
                                 let touches = e.nativeEvent.touches;
                                 if (touches.length == 2) {
-                                        this.isInPinchMode=true;
+                                        this.isInPinchMode = true;
                                         this.processPinch(touches[0].pageX, touches[0].pageY,
                                                 touches[1].pageX, touches[1].pageY);
                                 } else {
-                                        if(!this.isInPinchMode){
+                                        if (!this.isInPinchMode) {
                                                 this.processDrag(gestureState);
                                         }
                                 }
@@ -304,7 +304,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         },
 
                         onPanResponderRelease: () => {
-                                this.isInPinchMode=false;
+                                this.isInPinchMode = false;
                                 this.centerPosition = undefined;
                                 this.lastPinchDistance = undefined;
                         }
@@ -316,10 +316,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.puzzlePositionOffset.Y += gesture.dy * .2;
 
                 let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1 / this.state.zoomFactor - 1);
-                let maxYDisplacement = Math.max(this.initialPuzzleTopOffset, this.state.blockSize * this.props.levelHeight - Dimensions.get('window').height);
+                let maxYDisplacement = this.state.blockSize * this.props.levelHeight * (1 / this.state.zoomFactor - 1);
 
                 this.puzzlePositionOffset.X = Math.min(0, Math.max(this.puzzlePositionOffset.X, maxXDisplacement));
-                this.puzzlePositionOffset.Y = Math.sign(this.puzzlePositionOffset.Y) * Math.min(Math.abs(this.puzzlePositionOffset.Y), maxYDisplacement);
+                this.puzzlePositionOffset.Y = Math.min(2 * this.initialPuzzleTopOffset, Math.max(this.puzzlePositionOffset.Y, maxYDisplacement));
 
                 Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y } }).start();
         }
@@ -340,20 +340,21 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         let blockSize = this.calculateBlockSize(zoomFactor);
 
                         //centralize puzzle position
-                        if (!this.centerPosition) {
+                       
+                        if (this.centerPosition == undefined) {
                                 this.centerPosition = new BlockPosition();
-                                this.centerPosition.X = (x1 + x2) / 2;
-                                this.centerPosition.Y = (y1 + y2) / 2;
+                                this.centerPosition.X =  (x1 + x2) / 2;
+                                //this.centerPosition.Y =   (y1 + y2) / 2;
                         }
                         let screenWidth = Dimensions.get('window').width;
-                        let screenHeight = Dimensions.get('window').height;
+                       // let screenHeight = Dimensions.get('window').height;
                         let puzzleWidth = blockSize * this.props.levelWidth;
-                        let puzzleHeight = blockSize * this.props.levelHeight;
+                        //let puzzleHeight = blockSize * this.props.levelHeight;
 
-                        this.puzzlePositionOffset.X = -  this.centerPosition.X * ((puzzleWidth / screenWidth) - 1);
-                        this.puzzlePositionOffset.Y = this.centerPosition.Y * (screenHeight - puzzleHeight) / (screenHeight + 2 * this.centerPosition.Y);
-                        
-                        this.state.puzzlePositionOffset.setValue({ x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y  });
+                        this.puzzlePositionOffset.X =  -this.centerPosition.X * ((puzzleWidth / screenWidth) - 1);
+                        // this.puzzlePositionOffset.Y =  this.centerPosition.Y * (screenHeight - puzzleHeight) / (screenHeight + 2 * this.centerPosition.Y);
+
+                        this.state.puzzlePositionOffset.setValue({ x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y });
 
                         this.setState(Object.assign(this.state, { blockSize: blockSize, zoomFactor: zoomFactor }));
                 }
@@ -372,7 +373,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let blockSize = this.calculateBlockSize(this.state.zoomFactor);
 
                 this.initialPuzzleTopOffset = (Dimensions.get('window').height - this.props.levelHeight * blockSize) / 2;
-                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, mass: 5 }).start();
+                // Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, mass: 5 }).start();
+                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }}).start();
 
                 // Assign new state
                 let newState = Object.assign(this.state, { blockSize: blockSize });
@@ -393,6 +395,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.props.onRedirect(PageView.Menu);
         }
 
+
         render() {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
@@ -402,11 +405,13 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 };
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
+                              
                                 <View style={BoardStyles.frame} >
+                                
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
                                         </Animated.View>
-                                </View>
+                                 </View>
 
                                 <Alert title={this.state.alertState.alertTitle}
                                         showPopup={this.state.alertState.showAlert}
