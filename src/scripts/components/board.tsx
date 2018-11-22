@@ -322,7 +322,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 });
         }
 
-        handleBackPress(){
+        handleBackPress() {
                 this.props.onRedirect(PageView.Menu);
                 return true;
         }
@@ -399,10 +399,18 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         zoomFactor = (this.props.levelWidth * blockSize) / Dimensions.get('window').width;
                 }
 
-                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset } }).start(() => {
-                        this.state.blockSize.setValue(blockSize);
+                Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, duration: 700 }).start(() => {
+                        let puzzleWidth = this.blockSizeValue * this.props.levelWidth;
+                        let puzzleHeight = this.blockSizeValue * this.props.levelHeight;
+                        if (puzzleWidth > Dimensions.get('window').width) {
+                                this.puzzlePositionOffset.X = -(puzzleWidth - Dimensions.get('window').width) / 2;
+                        }
+                        this.puzzlePositionOffset.Y = -(puzzleHeight - Dimensions.get('window').height) / 2;
+
+                        Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y }, bounciness: 10 }).start();
                 });
 
+                this.state.blockSize.setValue(blockSize);
                 // Assign new state
                 let newState = Object.assign(this.state, { zoomFactor: zoomFactor });
                 this.setState(newState);
