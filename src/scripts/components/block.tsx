@@ -16,14 +16,16 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     super(props);
 
     this.state = new BlockState();
+    this.props.BlockSize.addListener(({ value }) => this.setState({ BlockSize: value }));
   }
   render() {
-    let blockOffset = this.props.BlockSize * (1 - this.blockShrinkRatio) / 2;
+
+    let blockOffset = this.state.BlockSize * (1 - this.blockShrinkRatio) / 2;
     let buttonStyle: StyleProp<TextStyle> = {
-      top: blockOffset + this.props.Top * this.props.BlockSize,
-      left: blockOffset + this.props.Left * this.props.BlockSize,
-      width: this.props.BlockSize * this.blockShrinkRatio,
-      height: this.props.BlockSize * this.blockShrinkRatio,
+      top: blockOffset + this.props.Top * this.state.BlockSize,
+      left: blockOffset + this.props.Left * this.state.BlockSize,
+      width: this.state.BlockSize * this.blockShrinkRatio,
+      height: this.state.BlockSize * this.blockShrinkRatio,
       //  fontSize: this.props.BlockSize * this.fontRatio,
     };
 
@@ -47,8 +49,8 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
 
     return (
-      <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={()=>this.onTouchEnd()} style={styles} underlayColor='#ddd'>
-        {blockContent}
+      <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={() => this.onTouchEnd()} style={styles} underlayColor='#ddd'>
+          {blockContent}
       </TouchableHighlight>
     );
   }
@@ -56,8 +58,8 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
   onTouchStart() {
     if (!this.isBlockTouched) {
       this.isBlockTouched = true;
-      this.isLongTouch= false;
-      this.blockTimer = setTimeout(() => { this.onRightClick(); this.isLongTouch= true;}, 500);
+      this.isLongTouch = false;
+      this.blockTimer = setTimeout(() => { this.onRightClick(); this.isLongTouch = true; }, 500);
     }
   }
 
@@ -71,9 +73,9 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     if (!this.props.IsClicked) {
       this.props.onContextMenu();
     }
-    if(this.isBlockTouched){
+    if (this.isBlockTouched) {
       this.blockTimer = setTimeout(() => { this.onRightClick() }, 500);
-   }
+    }
   }
 
   onLeftClick() {
@@ -102,7 +104,7 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     if (this.props.IsClicked) {
       styles.push(BlockStyles.clicked);
     }
- 
+
     return styles;
   }
 }

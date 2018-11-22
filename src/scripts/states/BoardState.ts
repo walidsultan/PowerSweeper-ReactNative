@@ -7,11 +7,12 @@ export default class BoardState {
     constructor(blocks: BlockType[][]) {
         this.alertState = new AlertState();
         this.puzzlePositionOffset = new Animated.ValueXY();
+        this.blockSize = new Animated.Value(0);
         this.blocks=blocks;
     }
 
     blocks: BlockInterface[][];
-    blockSize: number;
+    blockSize: Animated.Value;
     alertState: AlertState;
     zoomFactor: number=1;
     puzzlePositionOffset:Animated.ValueXY;

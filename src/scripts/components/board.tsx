@@ -23,6 +23,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private initialPuzzleTopOffset: number;
         private centerPosition: BlockPosition;
         private isInPinchMode: boolean = false;
+        private defaultBlockSize: number = 60;
+        private blockSizeValue: number;
 
         constructor(props: any) {
                 super(props);
@@ -35,6 +37,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
 
                 this.state = new BoardState(blocks);
+                this.state.blockSize.addListener(({value}) => this.blockSizeValue = value);
         }
 
         loadLevel(): BlockType[][] {
@@ -315,8 +318,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.puzzlePositionOffset.X += gesture.dx * .2;
                 this.puzzlePositionOffset.Y += gesture.dy * .2;
 
-                let maxXDisplacement = this.state.blockSize * this.props.levelWidth * (1 / this.state.zoomFactor - 1);
-                let maxYDisplacement = this.state.blockSize * this.props.levelHeight * (1 / this.state.zoomFactor - 1);
+                let maxXDisplacement = this.blockSizeValue * this.props.levelWidth * (1 / this.state.zoomFactor - 1);
+                let maxYDisplacement = this.blockSizeValue * this.props.levelHeight * (1 / this.state.zoomFactor - 1);
 
                 this.puzzlePositionOffset.X = Math.min(0, Math.max(this.puzzlePositionOffset.X, maxXDisplacement));
                 this.puzzlePositionOffset.Y = Math.min(2 * this.initialPuzzleTopOffset, Math.max(this.puzzlePositionOffset.Y, maxYDisplacement));
@@ -340,23 +343,24 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         let blockSize = this.calculateBlockSize(zoomFactor);
 
                         //centralize puzzle position
-                       
+
                         if (this.centerPosition == undefined) {
                                 this.centerPosition = new BlockPosition();
-                                this.centerPosition.X =  (x1 + x2) / 2;
+                                this.centerPosition.X = (x1 + x2) / 2;
                                 //this.centerPosition.Y =   (y1 + y2) / 2;
                         }
                         let screenWidth = Dimensions.get('window').width;
-                       // let screenHeight = Dimensions.get('window').height;
+                        // let screenHeight = Dimensions.get('window').height;
                         let puzzleWidth = blockSize * this.props.levelWidth;
                         //let puzzleHeight = blockSize * this.props.levelHeight;
 
-                        this.puzzlePositionOffset.X =  -this.centerPosition.X * ((puzzleWidth / screenWidth) - 1);
+                        this.puzzlePositionOffset.X = -this.centerPosition.X * ((puzzleWidth / screenWidth) - 1);
                         // this.puzzlePositionOffset.Y =  this.centerPosition.Y * (screenHeight - puzzleHeight) / (screenHeight + 2 * this.centerPosition.Y);
 
                         this.state.puzzlePositionOffset.setValue({ x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y });
-
-                        this.setState(Object.assign(this.state, { blockSize: blockSize, zoomFactor: zoomFactor }));
+                  
+                        this.state.blockSize.setValue(blockSize);
+                        this.setState(Object.assign(this.state, {zoomFactor: zoomFactor }));
                 }
                 this.lastPinchDistance = pinchDistance;
 
@@ -370,14 +374,25 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         updateDimensions() {
                 // Set block size
-                let blockSize = this.calculateBlockSize(this.state.zoomFactor);
+                let zoomFactor = this.state.zoomFactor;
+                let blockSize = this.calculateBlockSize(zoomFactor);
+                this.state.blockSize.setValue(blockSize);
 
                 this.initialPuzzleTopOffset = (Dimensions.get('window').height - this.props.levelHeight * blockSize) / 2;
-                // Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, mass: 5 }).start();
-                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }}).start();
+           
+
+                if (blockSize < this.defaultBlockSize) {
+                        blockSize = this.defaultBlockSize;
+                        zoomFactor = (this.props.levelWidth * blockSize) / Dimensions.get('window').width;
+                }
+
+                Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }}).start(()=>{
+                        Animated.timing(this.state.blockSize, { toValue: blockSize ,duration:500} ).start();
+                });
+                // Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset } }).start();
 
                 // Assign new state
-                let newState = Object.assign(this.state, { blockSize: blockSize });
+                let newState = Object.assign(this.state, {zoomFactor: zoomFactor });
                 this.setState(newState);
         }
 
@@ -405,13 +420,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 };
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
-                              
+
                                 <View style={BoardStyles.frame} >
-                                
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
                                         </Animated.View>
-                                 </View>
+                                </View>
 
                                 <Alert title={this.state.alertState.alertTitle}
                                         showPopup={this.state.alertState.showAlert}

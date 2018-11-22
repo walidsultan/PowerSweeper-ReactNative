@@ -11,9 +11,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/ps 48.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/PowerSweeper-Phone.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
