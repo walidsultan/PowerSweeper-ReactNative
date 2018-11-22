@@ -105,6 +105,10 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
       styles.push(BlockStyles.clicked);
     }
 
+    if (this.props.MarkedState>0) {
+      styles.push(BlockStyles.marked);
+    }
+
     return styles;
   }
 }

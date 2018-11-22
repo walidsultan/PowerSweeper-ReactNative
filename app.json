@@ -11,11 +11,11 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/ps 48.png",
+    "icon": "./assets/images/ic_launcher.png",
     "splash": {
       "image": "./assets/images/PowerSweeper-Phone.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1027BD"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

@@ -7,7 +7,7 @@ import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
 
@@ -23,7 +23,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private initialPuzzleTopOffset: number;
         private centerPosition: BlockPosition;
         private isInPinchMode: boolean = false;
-        private defaultBlockSize: number = 60;
+        private defaultBlockSize: number = 75;
         private blockSizeValue: number;
 
         constructor(props: any) {
@@ -34,10 +34,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.puzzleRef = React.createRef();
 
                 this.updateDimensions = this.updateDimensions.bind(this);
+                this.handleBackPress = this.handleBackPress.bind(this);
 
 
                 this.state = new BoardState(blocks);
-                this.state.blockSize.addListener(({value}) => this.blockSizeValue = value);
+                this.state.blockSize.addListener(({ value }) => this.blockSizeValue = value);
         }
 
         loadLevel(): BlockType[][] {
@@ -264,6 +265,13 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         componentDidMount() {
                 this.updateDimensions();
+                BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+        }
+
+
+
+        componentWillUnmount() {
+                BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
         }
 
         componentWillMount() {
@@ -314,6 +322,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 });
         }
 
+        handleBackPress(){
+                this.props.onRedirect(PageView.Menu);
+                return true;
+        }
+
         processDrag(gesture: PanResponderGestureState) {
                 this.puzzlePositionOffset.X += gesture.dx * .2;
                 this.puzzlePositionOffset.Y += gesture.dy * .2;
@@ -358,9 +371,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         // this.puzzlePositionOffset.Y =  this.centerPosition.Y * (screenHeight - puzzleHeight) / (screenHeight + 2 * this.centerPosition.Y);
 
                         this.state.puzzlePositionOffset.setValue({ x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y });
-                  
+
                         this.state.blockSize.setValue(blockSize);
-                        this.setState(Object.assign(this.state, {zoomFactor: zoomFactor }));
+                        this.setState(Object.assign(this.state, { zoomFactor: zoomFactor }));
                 }
                 this.lastPinchDistance = pinchDistance;
 
@@ -379,20 +392,19 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.state.blockSize.setValue(blockSize);
 
                 this.initialPuzzleTopOffset = (Dimensions.get('window').height - this.props.levelHeight * blockSize) / 2;
-           
+
 
                 if (blockSize < this.defaultBlockSize) {
                         blockSize = this.defaultBlockSize;
                         zoomFactor = (this.props.levelWidth * blockSize) / Dimensions.get('window').width;
                 }
 
-                Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }}).start(()=>{
-                        Animated.timing(this.state.blockSize, { toValue: blockSize ,duration:500} ).start();
+                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset } }).start(() => {
+                        this.state.blockSize.setValue(blockSize);
                 });
-                // Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset } }).start();
 
                 // Assign new state
-                let newState = Object.assign(this.state, {zoomFactor: zoomFactor });
+                let newState = Object.assign(this.state, { zoomFactor: zoomFactor });
                 this.setState(newState);
         }
 

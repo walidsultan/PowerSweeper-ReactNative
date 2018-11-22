@@ -16,6 +16,5 @@ export default class BoardState {
     alertState: AlertState;
     zoomFactor: number=1;
     puzzlePositionOffset:Animated.ValueXY;
-
     panTrace:string;
 }
