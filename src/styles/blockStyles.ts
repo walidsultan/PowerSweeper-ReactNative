@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const BlockStyles = StyleSheet.create({
    block:{
       position: 'absolute',
-      backgroundColor: '#a2a2a3',
+      backgroundColor:  'rgba(162,162,163,0.9)',
       borderRadius:5,
       shadowColor: "#000",
       shadowOffset: {
@@ -40,7 +40,7 @@ const BlockStyles = StyleSheet.create({
 
    },
    marked:{
-      backgroundColor: '#ddd',
+      backgroundColor: '#ddd'
    }
    
 });

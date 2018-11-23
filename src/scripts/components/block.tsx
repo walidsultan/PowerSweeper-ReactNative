@@ -31,7 +31,8 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
 
     let imageStyle: StyleProp<ImageStyle> = {
       width: buttonStyle.width,
-      height: buttonStyle.height
+      height: buttonStyle.height,
+      opacity:1
     }
 
     let styles = this.getBlockStyles();

@@ -2,15 +2,15 @@ import { StyleSheet } from 'react-native';
 
 const BoardStyles = StyleSheet.create({
     board: {
-        flex: 1,
-        backgroundColor: '#ccc'
+        flex: 1
     },
     frame: {
         flex: 1
     },
     puzzle: {
-        flex: 1
+        backgroundColor: 'rgba(255,255,255,0.5)'
     }
+    
 
 });
 

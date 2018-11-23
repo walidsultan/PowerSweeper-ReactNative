@@ -7,7 +7,7 @@ import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
 
@@ -365,7 +365,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         let screenWidth = Dimensions.get('window').width;
                         // let screenHeight = Dimensions.get('window').height;
                         let puzzleWidth = blockSize * this.props.levelWidth;
-                        //let puzzleHeight = blockSize * this.props.levelHeight;
+                        let puzzleHeight = blockSize * this.props.levelHeight;
 
                         this.puzzlePositionOffset.X = -this.centerPosition.X * ((puzzleWidth / screenWidth) - 1);
                         // this.puzzlePositionOffset.Y =  this.centerPosition.Y * (screenHeight - puzzleHeight) / (screenHeight + 2 * this.centerPosition.Y);
@@ -373,7 +373,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         this.state.puzzlePositionOffset.setValue({ x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y });
 
                         this.state.blockSize.setValue(blockSize);
-                        this.setState(Object.assign(this.state, { zoomFactor: zoomFactor }));
+                        this.setState(Object.assign(this.state, { zoomFactor: zoomFactor, puzzleWidth: puzzleWidth, puzzleHeight: puzzleHeight  }));
                 }
                 this.lastPinchDistance = pinchDistance;
 
@@ -399,9 +399,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         zoomFactor = (this.props.levelWidth * blockSize) / Dimensions.get('window').width;
                 }
 
+                let puzzleWidth = blockSize * this.props.levelWidth;
+                let puzzleHeight = blockSize * this.props.levelHeight;
+
                 Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, duration: 700 }).start(() => {
-                        let puzzleWidth = this.blockSizeValue * this.props.levelWidth;
-                        let puzzleHeight = this.blockSizeValue * this.props.levelHeight;
+
                         if (puzzleWidth > Dimensions.get('window').width) {
                                 this.puzzlePositionOffset.X = -(puzzleWidth - Dimensions.get('window').width) / 2;
                         }
@@ -412,7 +414,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.state.blockSize.setValue(blockSize);
                 // Assign new state
-                let newState = Object.assign(this.state, { zoomFactor: zoomFactor });
+                let newState = Object.assign(this.state, { zoomFactor: zoomFactor, puzzleWidth: puzzleWidth, puzzleHeight: puzzleHeight });
                 this.setState(newState);
         }
 
@@ -436,11 +438,26 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 let puzzlePosition = {
                         top: this.state.puzzlePositionOffset.y,
-                        left: this.state.puzzlePositionOffset.x
+                        left: this.state.puzzlePositionOffset.x,
+                        width: this.state.puzzleWidth,
+                        height: this.state.puzzleHeight
                 };
+                let background: StyleProp<ImageStyle> = {
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'stretch',
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        width: undefined,
+                        height: undefined
+                }
+
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
-
+                                <Image source={require('../../../assets/images/puzzleBackground.png')} style={background} ></Image>
                                 <View style={BoardStyles.frame} >
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
