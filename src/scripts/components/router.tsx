@@ -6,7 +6,7 @@ import { PageView } from '../enums/pageView';
 import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
-import { View, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleProp, ViewStyle, StatusBar } from 'react-native';
 
 export default class Router extends React.Component<RouterInterface, RouterState> {
     constructor(props: any) {
@@ -19,6 +19,7 @@ export default class Router extends React.Component<RouterInterface, RouterState
         };
         return (
             <View style= {routerStyle}>
+                <StatusBar hidden />
                 {this.getCurrentView()}
             </View>
         );
