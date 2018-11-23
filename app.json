@@ -13,9 +13,9 @@
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "splash": {
-      "image": "./assets/images/PowerSweeper-Phone.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1027BD"
+      "backgroundColor": "#eee"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
