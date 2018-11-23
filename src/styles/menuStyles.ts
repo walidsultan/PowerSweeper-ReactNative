@@ -9,22 +9,44 @@ const MenuStyles = StyleSheet.create({
     },
 
     buttonContainer: {
-        margin: 20
+        margin: 20,
+        justifyContent:'center',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
 
     itemsContainer: {
         justifyContent: 'center'
     },
-    button: { color: '#FFF',
+    button: {
      fontFamily: 'funkyFont',
      fontWeight: '400',
-     borderRadius: 4,
-     borderWidth: 0.5,
-     borderColor: '#d6d7da',
+   
      fontSize: 25,
-     padding: 10,
-     justifyContent: 'center',
-     backgroundColor: '#777'
+    
+     justifyContent: 'center'
+    },
+    buttonHighlight:{
+        color: '#222',
+        borderRadius: 50,
+        borderWidth: 0.5,
+        padding: 20,
+         backgroundColor: '#fff',
+         borderColor: '#222'
+    },
+    titleContainer:{
+        justifyContent: 'center',
+        alignItems:'center',
+    },
+    title:{
+        flexDirection: 'row',
+        fontFamily: 'funkyFont',
+        fontWeight: '400',
+        color: '#fff',
+        alignItems:'center',
+        fontSize:80,
+        marginBottom:10
+
     },
     instructions:{
         fontSize: 20

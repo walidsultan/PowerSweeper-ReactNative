@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
@@ -23,25 +23,42 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
     render() {
 
+        let background: StyleProp<ImageStyle> = {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: undefined,
+            height: undefined
+        }
+
         return <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
+            <Image source={require('../../../assets/images/menu_bg.png')} style={background} ></Image>
+            <View style={MenuStyles.titleContainer}>
+                <Text style={this.state.fontLoaded ? MenuStyles.title : undefined}>Mine Rage</Text>
+            </View>
             <View style={MenuStyles.itemsContainer}>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} >
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>New Game</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }}  disabled={true}>
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} disabled={true} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} >
+                    <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnCreditsClick(); }} >
+                    <TouchableHighlight onPress={() => { this.OnCreditsClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Credits</Text>
                     </TouchableHighlight>
                 </View>
@@ -59,7 +76,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 showPopup={this.state.showInstructionsPopup}
             >
                 <View >
-                    <FlatList 
+                    <FlatList
                         data={[
                             { key: '\u2022 Tap and hold on any block to mark a mine.' },
                             { key: '\u2022 There are three types of mines, each type has a different power.' },
@@ -78,20 +95,20 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 title='Credits'
                 showPopup={this.state.showCreditsPopup}
             >
-            <View style={MenuStyles.creditsContainer}>
-                <Text style={MenuStyles.creditsTitle}>
-                    Programming
+                <View style={MenuStyles.creditsContainer}>
+                    <Text style={MenuStyles.creditsTitle}>
+                        Programming
                      </Text>
-                <Text  style={MenuStyles.creditsText}>
-                    Walid Sultan
+                    <Text style={MenuStyles.creditsText}>
+                        Walid Sultan
                     </Text>
-                <Text style={MenuStyles.creditsTitle}>
-                    Graphic Design
+                    <Text style={MenuStyles.creditsTitle}>
+                        Graphic Design
                 </Text>
-                <Text  style={MenuStyles.creditsText}>
-                    Shady Sultan
+                    <Text style={MenuStyles.creditsText}>
+                        Shady Sultan
                   </Text>
-            </View>
+                </View>
             </MenuContent>
 
         </View >;
