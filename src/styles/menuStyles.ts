@@ -51,10 +51,16 @@ const MenuStyles = StyleSheet.create({
     instructions:{
         fontSize: 20
     },
-    creditsContainer:{
-        justifyContent:'center',
-        flexDirection: 'column',
-        alignItems:'center',
+    feedbackontainer:{
+        height:300
+    },
+    feedbackText:{
+        flex:1, 
+        backgroundColor:'#fff',
+        borderWidth: 0.5,
+        borderColor: '#222',
+        padding:10,
+        textAlignVertical: 'top'
     },
     creditsTitle:{
         fontWeight:'bold',

@@ -6,6 +6,6 @@ export default class MenuState {
     fontSize: number;
     popupWidth: number;
     showInstructionsPopup: boolean = false;
-    showCreditsPopup: boolean= false;
+    showFeedbackPopup: boolean= false;
     fontLoaded: boolean;
 }

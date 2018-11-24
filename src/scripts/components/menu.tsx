@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
@@ -12,7 +12,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
     private menuRef: any;
     private popupWidthRatio: number = 0.6;
-
+    private feedbackText:string;
     constructor(props: any) {
         super(props);
         this.state = new MenuState();
@@ -58,8 +58,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnCreditsClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
-                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Credits</Text>
+                    <TouchableHighlight onPress={() => { this.OnFeedbackClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Feedback</Text>
                     </TouchableHighlight>
                 </View>
             </View>
@@ -92,22 +92,18 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
             <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
-                title='Credits'
-                showPopup={this.state.showCreditsPopup}
+                title='Feedback'
+                showPopup={this.state.showFeedbackPopup}
             >
-                <View style={MenuStyles.creditsContainer}>
-                    <Text style={MenuStyles.creditsTitle}>
-                        Programming
-                     </Text>
-                    <Text style={MenuStyles.creditsText}>
-                        Walid Sultan
-                    </Text>
-                    <Text style={MenuStyles.creditsTitle}>
-                        Graphic Design
-                </Text>
-                    <Text style={MenuStyles.creditsText}>
-                        Shady Sultan
-                  </Text>
+                <View style={MenuStyles.feedbackontainer}>
+                <TextInput
+                    multiline={true}
+                    numberOfLines={4}
+                    onChangeText={(text) => {this.feedbackText= text;}}
+                    style={MenuStyles.feedbackText} autoCorrect={true} autoFocus={true}
+                    autoCapitalize={'sentences'}
+                    placeholder={'Please type in any suggestions to improve this game.'}
+                    />
                 </View>
             </MenuContent>
 
@@ -115,15 +111,15 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     onMenuContentCloseClick() {
-        this.setState({ showCreditsPopup: false, showInstructionsPopup: false });
+        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false });
     }
 
     OnInstructionsClick() {
         this.setState({ showInstructionsPopup: true });
     }
 
-    OnCreditsClick() {
-        this.setState({ showCreditsPopup: true });
+    OnFeedbackClick() {
+        this.setState({ showFeedbackPopup: true });
     }
 
     async componentDidMount() {
