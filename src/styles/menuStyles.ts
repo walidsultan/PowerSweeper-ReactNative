@@ -62,12 +62,26 @@ const MenuStyles = StyleSheet.create({
         padding:10,
         textAlignVertical: 'top'
     },
-    creditsTitle:{
-        fontWeight:'bold',
-        fontSize:20
+    sendFeedback:{
+        marginTop:15,
+        height:40,
+        backgroundColor: 'rgb(0, 153, 255)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5
     },
-    creditsText:{
-        fontSize:20
+    sendFeedbackDisabled:{
+        backgroundColor: 'rgb(153, 153,153)'
+    },
+    activityIndicator:{
+       position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex:10
     }
 });
 

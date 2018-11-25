@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
@@ -12,7 +12,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
     private menuRef: any;
     private popupWidthRatio: number = 0.6;
-    private feedbackText:string;
+    private feedbackText: string;
     constructor(props: any) {
         super(props);
         this.state = new MenuState();
@@ -48,17 +48,17 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} disabled={true} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
+                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} disabled={true} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
+                    <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnFeedbackClick(); }} style={MenuStyles.buttonHighlight}  underlayColor="#ddd">
+                    <TouchableHighlight onPress={() => { this.OnFeedbackClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Feedback</Text>
                     </TouchableHighlight>
                 </View>
@@ -95,19 +95,38 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 title='Feedback'
                 showPopup={this.state.showFeedbackPopup}
             >
-                <View style={MenuStyles.feedbackontainer}>
-                <TextInput
-                    multiline={true}
-                    numberOfLines={4}
-                    onChangeText={(text) => {this.feedbackText= text;}}
-                    style={MenuStyles.feedbackText} autoCorrect={true} autoFocus={true}
-                    autoCapitalize={'sentences'}
-                    placeholder={'Please type in any suggestions to improve this game.'}
-                    />
-                </View>
+                {!this.state.isFeedbackSent ?
+                    <View style={MenuStyles.feedbackontainer}>
+                        {this.showActivity()}
+                        <TextInput
+                            multiline={true}
+                            numberOfLines={4}
+                            onChangeText={(text) => { this.feedbackText = text; }}
+                            style={MenuStyles.feedbackText} autoCorrect={true} autoFocus={true}
+                            autoCapitalize={'sentences'}
+                            placeholder={'Please type in any suggestions to improve this game.'}
+                            editable={!this.state.isSendingFeedback}
+                        />
+                        <TouchableHighlight onPress={() => { this.OnSendFeedbackClick(); }} style={this.getFeedbackButtonStyles()} underlayColor="#ddd" disabled={this.state.isSendingFeedback}>
+                            <Text>Send</Text>
+                        </TouchableHighlight>
+                    </View>
+                    :
+                    <View><Text>Thanks for your feedback!</Text></View>
+                }
             </MenuContent>
 
         </View >;
+    }
+
+    showActivity() {
+        if (this.state.isSendingFeedback) {
+            return <View style={MenuStyles.activityIndicator}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>;
+        } else {
+            return null;
+        }
     }
 
     onMenuContentCloseClick() {
@@ -119,7 +138,34 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     OnFeedbackClick() {
-        this.setState({ showFeedbackPopup: true });
+        this.setState({ showFeedbackPopup: true, isFeedbackSent:false });
+    }
+
+    getFeedbackButtonStyles(): any[] {
+        let styles = new Array();
+        styles.push(MenuStyles.sendFeedback);
+        if (this.state.isSendingFeedback) {
+            styles.push(MenuStyles.sendFeedbackDisabled);
+        }
+        return styles;
+    }
+
+    OnSendFeedbackClick() {
+        this.setState({ isSendingFeedback: true });
+
+        return fetch('http://walidsultan.net/MineRageApi/api/Feedback/save', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'Text': this.feedbackText
+            })
+        }).then(() => this.setState({ isSendingFeedback: false,isFeedbackSent:true }))
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     async componentDidMount() {

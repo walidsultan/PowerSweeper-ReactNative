@@ -8,4 +8,6 @@ export default class MenuState {
     showInstructionsPopup: boolean = false;
     showFeedbackPopup: boolean= false;
     fontLoaded: boolean;
+    isSendingFeedback: boolean=false;
+    isFeedbackSent: boolean=false;
 }
