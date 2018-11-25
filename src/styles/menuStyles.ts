@@ -82,6 +82,10 @@ const MenuStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         zIndex:10
+    },
+    highScoreContainer:{
+        flex:1,
+        backgroundColor: '#444'
     }
 });
 

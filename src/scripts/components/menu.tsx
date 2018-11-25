@@ -7,6 +7,7 @@ import { Font } from 'expo';
 import MenuContent from './MenuContent';
 import LevelDifficulty from './LevelDifficulty';
 import { Difficulty } from '../enums/difficulty';
+import HighScores from './HighScores';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -48,7 +49,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnNewClick(); }} disabled={true} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
+                    <TouchableHighlight onPress={() => { this.OnHighScoresClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
                     </TouchableHighlight>
                 </View>
@@ -116,6 +117,15 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 }
             </MenuContent>
 
+            <MenuContent
+                onCloseClick={() => this.onMenuContentCloseClick()}
+                title='High Scores'
+                showPopup={this.state.showHighScoresPopup}
+            >
+             <View style={MenuStyles.highScoreContainer}>
+                <HighScores></HighScores>
+                </View>
+            </MenuContent>
         </View >;
     }
 
@@ -130,7 +140,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     onMenuContentCloseClick() {
-        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false });
+        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false ,showHighScoresPopup:false});
     }
 
     OnInstructionsClick() {
@@ -138,7 +148,11 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     OnFeedbackClick() {
-        this.setState({ showFeedbackPopup: true, isFeedbackSent:false });
+        this.setState({ showFeedbackPopup: true, isFeedbackSent: false });
+    }
+
+    OnHighScoresClick() {
+        this.setState({ showHighScoresPopup: true });
     }
 
     getFeedbackButtonStyles(): any[] {
@@ -162,7 +176,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             body: JSON.stringify({
                 'Text': this.feedbackText
             })
-        }).then(() => this.setState({ isSendingFeedback: false,isFeedbackSent:true }))
+        }).then(() => this.setState({ isSendingFeedback: false, isFeedbackSent: true }))
             .catch((error) => {
                 console.error(error);
             });

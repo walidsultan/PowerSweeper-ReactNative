@@ -15,7 +15,7 @@ export default class MenuContent extends React.Component<MenuContentInterface, {
             <Popup showPopup={this.props.showPopup}
                 title={this.props.title}
                 onCloseClick={() => this.props.onCloseClick()}>
-                <View>
+                <View style={{flex:1}}>
                     {this.props.children}
                 </View>
             </Popup>

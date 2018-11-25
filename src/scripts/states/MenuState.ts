@@ -7,6 +7,7 @@ export default class MenuState {
     popupWidth: number;
     showInstructionsPopup: boolean = false;
     showFeedbackPopup: boolean= false;
+    showHighScoresPopup: boolean= false;
     fontLoaded: boolean;
     isSendingFeedback: boolean=false;
     isFeedbackSent: boolean=false;
