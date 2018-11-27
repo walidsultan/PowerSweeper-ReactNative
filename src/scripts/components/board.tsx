@@ -25,9 +25,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private isInPinchMode: boolean = false;
         private defaultBlockSize: number = 75;
         private blockSizeValue: number;
+        private startTime:Date;
 
         constructor(props: any) {
                 super(props);
+                this.startTime = new Date();
 
                 var blocks = this.loadLevel();
 
@@ -247,6 +249,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 this.state.alertState.showAlert = true;
                                 this.state.alertState.alertTitle = 'Congrats!';
                                 this.state.alertState.alertMessage = 'You did it! Play again?';
+                                //get the time the player took to solve the puzzle
+                                var endDate = new Date();
+                                let puzzleDuration= (endDate.getTime() - this.startTime.getTime())/1000;
+                                puzzleDuration=puzzleDuration;
+                                
                                 this.setState(newState);
                         }
 
