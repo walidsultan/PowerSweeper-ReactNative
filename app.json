@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "PowerSweeper-ReactNative",
-    "description": "Test project",
-    "slug": "PowerSweeper-ReactNative",
+    "name": "Mine Rage",
+    "description": "Puzzle game based on the classic windows game minesweeper",
+    "slug": "Mine Rage",
     "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": [
