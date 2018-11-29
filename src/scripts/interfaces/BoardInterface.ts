@@ -1,3 +1,5 @@
+import { Difficulty } from "../enums/difficulty";
+
 export default interface BoardInterface {
     levelWidth: number ;
     levelHeight: number ;
@@ -5,4 +7,5 @@ export default interface BoardInterface {
     mediumMinesCount: number ;
     bigMinesCount: number;
     onRedirect: any;
+    difficulty:Difficulty;
 }

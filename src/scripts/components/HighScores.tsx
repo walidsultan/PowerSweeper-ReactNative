@@ -15,7 +15,7 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
         super(props);
 
         this.state = new HighScoresState();
-        this.loadHighscores(0);
+        this.loadHighscores(1);
     }
 
     easyRoute() {
@@ -102,7 +102,7 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
             });
             const highscores = await response.json();
             let newState = null;
-            switch (difficulty + 1) {
+            switch (difficulty) {
                 case Difficulty.Easy:
                     newState = Object.assign(this.state, { easyHighscores: highscores });
                     break;
@@ -126,12 +126,12 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
         switch (index + 1) {
             case Difficulty.Medium:
                 if (!this.state.mediumHighscores) {
-                    this.loadHighscores(index);
+                    this.loadHighscores(index+1);
                 }
                 break;
             case Difficulty.Hard:
                 if (!this.state.hardHighscores) {
-                    this.loadHighscores(index);
+                    this.loadHighscores(index+1);
                 }
                 break;
         }
