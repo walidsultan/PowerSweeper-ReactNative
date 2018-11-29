@@ -27,7 +27,6 @@ const MenuStyles = StyleSheet.create({
      justifyContent: 'center'
     },
     buttonHighlight:{
-        color: '#222',
         borderRadius: 50,
         borderWidth: 0.5,
         padding: 20,
@@ -86,6 +85,11 @@ const MenuStyles = StyleSheet.create({
     highScoreContainer:{
         flex:1,
         backgroundColor: '#444'
+    },
+    signInImageContainer:{
+        position:"absolute",
+        top: 10,
+        right: 10
     }
 });
 

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mine Rage",
     "description": "Puzzle game based on the classic windows game minesweeper",
-    "slug": "Mine Rage",
+    "slug": "Mine-Rage",
     "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": [
@@ -27,7 +27,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ws.powersweeper"
+      "package": "com.ws.minerage",
+      "permissions": []
     }
   }
 }

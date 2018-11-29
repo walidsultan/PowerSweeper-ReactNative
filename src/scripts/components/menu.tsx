@@ -1,13 +1,14 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
 import LevelDifficulty from './LevelDifficulty';
 import { Difficulty } from '../enums/difficulty';
 import HighScores from './HighScores';
+import * as Expo from "expo";
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -21,6 +22,26 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
         this.updateDimensions = this.updateDimensions.bind(this);
 
+        // AsyncStorage.multiRemove(['name', 'photoUrl']);
+        
+        AsyncStorage.multiGet(['name', 'photoUrl'], (err, stores) => {
+            if (err) {
+                console.log(err);
+            }
+            let isSignedIn = false;
+            stores.map((result, i, store) => {
+                console.log(result);
+                let key = store[i][0];
+                let value = store[i][1];
+                if (key == "name" && value) {
+                    isSignedIn = true;
+                }
+            });
+            if (!isSignedIn) {
+                Animated.timing(this.state.signInButtonOpacity, { toValue: 1, duration: 700, delay: 1000 }).start();
+            }
+            this.setState({ isSignedIn: isSignedIn });
+        });
     }
     render() {
 
@@ -35,6 +56,11 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             right: 0,
             width: undefined,
             height: undefined
+        }
+
+        let signInImageStyle: StyleProp<ImageStyle> = {
+            width: 150,
+            height: 36
         }
 
         return <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
@@ -63,7 +89,15 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Feedback</Text>
                     </TouchableHighlight>
                 </View>
+
+
             </View>
+            {!this.state.isSignedIn && <Animated.View style={[MenuStyles.signInImageContainer, { opacity: this.state.signInButtonOpacity }]}>
+                <TouchableHighlight onPress={() => { this.signIn(); }} underlayColor="#ddd">
+                    <Image source={require('../../../assets/images/google_signin_light.png')} style={signInImageStyle}></Image>
+                </TouchableHighlight>
+            </Animated.View>}
+
             <LevelDifficulty showPopup={this.state.showNewLevelPopup}
                 onCloseClick={() => this.OnLevelDifficultyCloseClick()}
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
@@ -122,8 +156,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 title='High Scores'
                 showPopup={this.state.showHighScoresPopup}
             >
-             <View style={MenuStyles.highScoreContainer}>
-                <HighScores></HighScores>
+                <View style={MenuStyles.highScoreContainer}>
+                    <HighScores></HighScores>
                 </View>
             </MenuContent>
         </View >;
@@ -140,7 +174,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     onMenuContentCloseClick() {
-        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false ,showHighScoresPopup:false});
+        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false, showHighScoresPopup: false });
     }
 
     OnInstructionsClick() {
@@ -222,5 +256,25 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
     OnLevelDifficultyCloseClick() {
         this.setState({ showNewLevelPopup: false });
+    }
+
+    async signIn() {
+        try {
+            const result = await Expo.Google.logInAsync({
+                androidClientId: "568265247315-vum3oep2nbog6kbb34f850i8airl84n9.apps.googleusercontent.com",
+                //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
+                scopes: ["profile", "email"]
+            });
+            if (result.type === "success") {
+                AsyncStorage.multiSet([['name', result.user.name],
+                ['photoUrl', result.user.photoUrl]]);
+                this.setState({ isSignedIn: true });
+            } else {
+                console.log("cancelled")
+            }
+
+        } catch (e) {
+            console.log("error", e)
+        }
     }
 }
