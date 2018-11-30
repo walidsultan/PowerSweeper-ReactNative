@@ -3,15 +3,15 @@ import { StyleSheet } from 'react-native';
 const HighscoresStyles = StyleSheet.create({
     grid:{
         padding:10,
+        flexDirection:'row'
     },
     name:{
         fontSize:25,
-        color:'#fff'
+        color:'#000',
     },
     time:{
-        marginTop:5,
-        fontSize:25,
-        color:'#fff'
+        fontSize:15,
+        color:'#009900',
     },
     activityIndicator:{
         position: 'absolute',
@@ -25,7 +25,10 @@ const HighscoresStyles = StyleSheet.create({
      },
      tabContainer:{
          flex:1,
-         backgroundColor:'#4d94ff'
+         backgroundColor:'#FFF'
+     },
+     order:{
+
      }
 });
 

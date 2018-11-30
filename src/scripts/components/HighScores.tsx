@@ -1,8 +1,8 @@
 // import '../../css/levelDifficulty.less';
 import * as React from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Image } from 'react-native';
 import HighScoresInterface from '../interfaces/HighScoresInterface';
-import { TabView } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 import HighScoresState from '../states/HighScoresState';
 import { Difficulty } from '../enums/difficulty';
 import HighScoreType from '../types/HighScoreType';
@@ -57,6 +57,7 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
             <View style={{ flex: 1 }}>
                 {this.showActivity()}
                 <TabView
+
                     navigationState={this.state}
                     onIndexChange={(i) => this.tabViewIndexChange(i)}
                     renderScene={
@@ -73,6 +74,13 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
                             }
                         }
                     }
+                    renderTabBar={props =>
+                        <TabBar
+                          {...props}
+                          indicatorStyle={{ backgroundColor: '#FFF' }}
+                          tabStyle={{ backgroundColor: '#000' }}
+                        />
+                      }
                 />
             </View>
         );
@@ -81,13 +89,17 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
     getRenderedScores(scoresData: HighScoreType[]) {
         if (scoresData) {
             let scores = [];
+            let index = 1;
             for (let score of scoresData) {
                 scores.push(
                     <View style={HighscoresStyles.grid}>
-                        <Text style={HighscoresStyles.name}>{score.Name}</Text>
-                        <Text style={HighscoresStyles.time}>{score.Time + ' s'}</Text>
+                        <View style={{ justifyContent: 'center', paddingLeft: 5,paddingRight:20 }}><Text style={HighscoresStyles.order}>{index}</Text></View>
+                        <View style={{ justifyContent: 'center' }}><Image source={{ uri: score.PhotoUrl }} style={{ width: 50, height: 50, borderRadius: 25 }}></Image></View>
+                        <View style={{ justifyContent:'flex-start', paddingLeft: 20 }}><Text style={HighscoresStyles.name}>{score.Name}</Text>
+                            <Text style={HighscoresStyles.time}>{score.Time + ' s'}</Text></View>
                     </View>
                 )
+                index++;
             }
             return scores;
         }
@@ -126,12 +138,12 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
         switch (index + 1) {
             case Difficulty.Medium:
                 if (!this.state.mediumHighscores) {
-                    this.loadHighscores(index+1);
+                    this.loadHighscores(index + 1);
                 }
                 break;
             case Difficulty.Hard:
                 if (!this.state.hardHighscores) {
-                    this.loadHighscores(index+1);
+                    this.loadHighscores(index + 1);
                 }
                 break;
         }

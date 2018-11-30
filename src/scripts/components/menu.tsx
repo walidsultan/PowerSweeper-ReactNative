@@ -93,7 +93,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
             </View>
             {!this.state.isSignedIn && <Animated.View style={[MenuStyles.signInImageContainer, { opacity: this.state.signInButtonOpacity }]}>
-                <TouchableHighlight onPress={() => { this.signIn(); }} underlayColor="#ddd">
+                <TouchableHighlight onPress={async () => {await this.signIn(); }} underlayColor="#ddd">
                     <Image source={require('../../../assets/images/google_signin_light.png')} style={signInImageStyle}></Image>
                 </TouchableHighlight>
             </Animated.View>}
@@ -261,7 +261,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     async signIn() {
         try {
             const result = await Expo.Google.logInAsync({
-                androidClientId: "568265247315-vum3oep2nbog6kbb34f850i8airl84n9.apps.googleusercontent.com",
+                androidClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
                 //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
                 scopes: ["profile", "email"]
             });
