@@ -151,6 +151,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         this.setBlockValues(left, top, boardState.blocks);
                 }
                 this.setState({ blocks: boardState.blocks });
+                this.shouldCheckIfLevelIsSolved = true;
 
         }
 
@@ -224,7 +225,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let mismatch = false;
                 for (let row of this.state.blocks) {
                         for (let block of row) {
-                                if (block.HasMine && block.MarkedState !== block.Mine) {
+                                if ((block.HasMine && block.MarkedState !== block.Mine) || (!block.HasMine && block.MarkedState>0)) {
                                         mismatch = true;
                                         break;
                                 }
@@ -272,7 +273,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         componentDidUpdate() {
-                if (this.shouldCheckIfLevelIsSolved) {
+                if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
                         if (this.checkIfLevelIsSolved()) {
                                 let newState = Object.assign(this.state, { alertState: { showAlert: true } });
                                 this.state.alertState.showAlert = true;
@@ -313,7 +314,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         componentWillMount() {
                 this.panResponder = PanResponder.create({
                         onMoveShouldSetPanResponderCapture: (e, gestureState) => {
+                                if( this.state.alertState.showAlert) return false;
 
+                                if(this.isMineClicked) return false;
 
                                 if (e.nativeEvent.touches.length > 1) {
                                         return true;
