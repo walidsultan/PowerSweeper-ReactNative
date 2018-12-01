@@ -139,11 +139,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                         } else {
                                 // make sure the first click is not a mine
+                                let newBlocks:BlockType[][]= null;
                                 do {
-                                        this.loadLevel();
-                                } while (boardState.blocks[left][top].HasMine);
-                                this.setState({ blocks: boardState.blocks });
-                                this.handleBlockClick(left, top);
+                                        newBlocks= this.loadLevel();
+                                } while (newBlocks[left][top].HasMine);
+                                this.setState(Object.assign(this.state, { blocks: newBlocks }),()=>this.handleBlockClick(left, top));
                         }
                 } else {
                         this.isAnyBlockClicked = true;
@@ -392,7 +392,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         let blockSize = this.calculateBlockSize(zoomFactor);
 
                         //centralize puzzle position
-
                         if (this.centerPosition == undefined) {
                                 this.centerPosition = new BlockPosition();
                                 this.centerPosition.X = (x1 + x2) / 2;
@@ -469,16 +468,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         saveHighScore(time: number) {
-                console.log(
-                        JSON.stringify({
-                                "Name": this.currentUsername,
-                                "Time": time,
-                                "Difficulty": this.props.difficulty,
-                                "PhotoUrl": this.currentUserPhoto,
-                                "isSignedIn": this.isSignedIn
-                        }
-
-                ));
                 return fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
                         method: 'POST',
                         headers: {
@@ -492,8 +481,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 "PhotoUrl": this.currentUserPhoto,
                                 "isSignedIn": this.isSignedIn
                         })
-                }).then(() => console.log('saved high score')).catch((error) => {
-                        console.error(error);
                 });
         }
 

@@ -76,7 +76,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 </View>
                 <View style={MenuStyles.buttonContainer}>
                     <TouchableHighlight onPress={() => { this.OnHighScoresClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
-                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>High Scores</Text>
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Leaderboards</Text>
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
@@ -153,7 +153,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
             <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
-                title='High Scores'
+                title='Leaderboards'
                 showPopup={this.state.showHighScoresPopup}
             >
                 <View style={MenuStyles.highScoreContainer}>
