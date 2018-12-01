@@ -64,7 +64,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         }
 
         return <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
-            <Image source={require('../../../assets/images/menu_bg.png')} style={background} ></Image>
+            <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
             <View style={MenuStyles.titleContainer}>
                 <Text style={this.state.fontLoaded ? MenuStyles.title : undefined}>Mine Rage</Text>
             </View>

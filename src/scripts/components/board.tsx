@@ -139,11 +139,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                         } else {
                                 // make sure the first click is not a mine
-                                let newBlocks:BlockType[][]= null;
+                                let newBlocks: BlockType[][] = null;
                                 do {
-                                        newBlocks= this.loadLevel();
+                                        newBlocks = this.loadLevel();
                                 } while (newBlocks[left][top].HasMine);
-                                this.setState(Object.assign(this.state, { blocks: newBlocks }),()=>this.handleBlockClick(left, top));
+                                this.setState(Object.assign(this.state, { blocks: newBlocks }), () => this.handleBlockClick(left, top));
                         }
                 } else {
                         this.isAnyBlockClicked = true;
@@ -225,7 +225,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let mismatch = false;
                 for (let row of this.state.blocks) {
                         for (let block of row) {
-                                if ((block.HasMine && block.MarkedState !== block.Mine) || (!block.HasMine && block.MarkedState>0)) {
+                                if ((block.HasMine && block.MarkedState !== block.Mine) || (!block.HasMine && block.MarkedState > 0)) {
                                         mismatch = true;
                                         break;
                                 }
@@ -273,30 +273,27 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         componentDidUpdate() {
-                if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
-                        if (this.checkIfLevelIsSolved()) {
-                                let newState = Object.assign(this.state, { alertState: { showAlert: true } });
-                                this.state.alertState.showAlert = true;
-                                this.state.alertState.alertTitle = 'Congrats!';
-                                this.state.alertState.alertMessage = 'You did it! Play again?';
-                                //get the time the player took to solve the puzzle
-                                var endDate = new Date();
-                                let puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
-                                this.saveHighScore(puzzleDuration);
+                if (!this.state.alertState.showAlert) {
+                        if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
+                                if (this.checkIfLevelIsSolved()) {
+                                        let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Congrats!', alertMessage: 'You did it! Play again?' } });
+                                        this.state.alertState.showAlert = true;
+                                        //get the time the player took to solve the puzzle
+                                        var endDate = new Date();
+                                        let puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
+                                        this.saveHighScore(puzzleDuration);
 
-                                this.setState(newState);
+                                        this.setState(newState);
+                                }
+
+                                this.shouldCheckIfLevelIsSolved = false;
                         }
 
-                        this.shouldCheckIfLevelIsSolved = false;
-                }
-
-                if (this.isMineClicked) {
-                        let newState = Object.assign(this.state, { alertState: { showAlert: true } });
-                        this.state.alertState.showAlert = true;
-                        this.state.alertState.alertTitle = 'Game Over';
-                        this.state.alertState.alertMessage = 'You clicked on a mine. Play again?';
-                        this.setState(newState);
-                        this.isMineClicked = false;
+                        if (this.isMineClicked) {
+                                let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
+                                this.setState(newState);
+                                this.isMineClicked = false;
+                        }
                 }
         }
 
@@ -314,9 +311,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         componentWillMount() {
                 this.panResponder = PanResponder.create({
                         onMoveShouldSetPanResponderCapture: (e, gestureState) => {
-                                if( this.state.alertState.showAlert) return false;
+                                if (this.state.alertState.showAlert) return false;
 
-                                if(this.isMineClicked) return false;
+                                if (this.isMineClicked) return false;
 
                                 if (e.nativeEvent.touches.length > 1) {
                                         return true;
@@ -511,7 +508,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
-                                <Image source={require('../../../assets/images/puzzleBackground.png')} style={background} ></Image>
+                                <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
                                 <View style={BoardStyles.frame} >
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}

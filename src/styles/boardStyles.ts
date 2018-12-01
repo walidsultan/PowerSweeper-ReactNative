@@ -8,7 +8,7 @@ const BoardStyles = StyleSheet.create({
         flex: 1
     },
     puzzle: {
-        backgroundColor: 'rgba(255,255,255,0.5)'
+        backgroundColor: 'rgba(255,255,255,0.8)'
     }
     
 
