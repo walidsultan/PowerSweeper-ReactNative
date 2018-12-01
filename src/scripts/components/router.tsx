@@ -7,18 +7,36 @@ import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
 import { View, StyleProp, ViewStyle, StatusBar } from 'react-native';
+import * as Expo from "expo";
+
+const soundObject = new Expo.Audio.Sound();
 
 export default class Router extends React.Component<RouterInterface, RouterState> {
+
     constructor(props: any) {
         super(props);
         this.state = new RouterState();
+
+        this.playBackGroundMusic();
     }
+
+    async playBackGroundMusic() {
+        try {
+            await soundObject.loadAsync(require('../../../assets/audio/background.mp3'));
+            await soundObject.setIsLoopingAsync(true);
+            await soundObject.playAsync();
+            // Your sound is playing!
+        } catch (error) {
+            // An error occurred!
+        }
+    }
+
     render() {
         let routerStyle: StyleProp<ViewStyle> = {
-             flex: 1
+            flex: 1
         };
         return (
-            <View style= {routerStyle}>
+            <View style={routerStyle}>
                 <StatusBar hidden />
                 {this.getCurrentView()}
             </View>
@@ -74,7 +92,7 @@ export default class Router extends React.Component<RouterInterface, RouterState
     }
 
     componentDidUpdate() {
-       // this.routerRef.current.focus();
+        // this.routerRef.current.focus();
     }
 
 }
