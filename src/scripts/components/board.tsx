@@ -10,6 +10,11 @@ import { PageView } from '../enums/pageView';
 import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, AsyncStorage } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
+import * as Expo from "expo";
+
+const stretchSound = new Expo.Audio.Sound();
+const explodeSound = new Expo.Audio.Sound();
+const succeedSound = new Expo.Audio.Sound();
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -30,6 +35,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private currentUserPhoto: string;
         private isSignedIn: boolean = false;
 
+
         constructor(props: any) {
                 super(props);
                 this.startTime = new Date();
@@ -46,8 +52,15 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.state.blockSize.addListener(({ value }) => this.blockSizeValue = value);
 
                 this.setUsername();
+
+                this.loadSounds();
         }
 
+        async loadSounds(){
+            await stretchSound.loadAsync(require('../../../assets/audio/sucked.wav'));
+            await explodeSound.loadAsync(require('../../../assets/audio/explode.wav'));
+            await succeedSound.loadAsync(require('../../../assets/audio/succeed.wav'));
+        }
 
         setUsername() {
 
@@ -123,6 +136,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (boardState.blocks[left][top].HasMine) {
                         if (this.isAnyBlockClicked) {
                                 this.isMineClicked = true;
+                                explodeSound.setPositionAsync(0);
+                                explodeSound.playAsync();
                                 for (let row of boardState.blocks) {
                                         for (let block of row) {
                                                 if (!block.IsClicked) {
@@ -200,6 +215,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 blocksStates[left][top].Value = value;
                 blocksStates[left][top].MarkedState = 0;
                 if (value === 0) {
+                        if(!this.isMineClicked){
+                                stretchSound.setPositionAsync(0);
+                                stretchSound.playAsync();
+                        }
                         for (let block of surroundingBlocks) {
                                 this.setBlockValues(block.Position.X, block.Position.Y, blocksStates);
                         }
@@ -276,6 +295,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (!this.state.alertState.showAlert) {
                         if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
                                 if (this.checkIfLevelIsSolved()) {
+                                        //play sound
+                                        succeedSound.setPositionAsync(0);
+                                        succeedSound.playAsync();
+
                                         let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Congrats!', alertMessage: 'You did it! Play again?' } });
                                         this.state.alertState.showAlert = true;
                                         //get the time the player took to solve the puzzle
