@@ -2,7 +2,7 @@ import * as React from 'react';
 import BlockInterface from '../interfaces/BlockInterface';
 import BlockState from '../states/BlockState';
 import { MineType } from '../enums/mineType';
-import { TouchableHighlight, Text, Vibration, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType } from 'react-native';
+import { TouchableHighlight, Text, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType } from 'react-native';
 import BlockStyles from '../../styles/blockStyles';
 
 export default class Block extends React.Component<BlockInterface, BlockState> {
@@ -70,7 +70,6 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
   }
 
   onRightClick() {
-    Vibration.vibrate(100, false);
     if (!this.props.IsClicked) {
       this.props.onContextMenu();
     }

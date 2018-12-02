@@ -6,7 +6,7 @@ import { PageView } from '../enums/pageView';
 import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
-import { View, StyleProp, ViewStyle, StatusBar } from 'react-native';
+import { View, StyleProp, ViewStyle, StatusBar, AsyncStorage } from 'react-native';
 import * as Expo from "expo";
 
 const soundObject = new Expo.Audio.Sound();
@@ -21,10 +21,14 @@ export default class Router extends React.Component<RouterInterface, RouterState
     }
 
     async playBackGroundMusic() {
+        let isMusicEnabled= await  AsyncStorage.getItem('isMusicEnabled');
+
         try {
             await soundObject.loadAsync(require('../../../assets/audio/background.mp3'));
             await soundObject.setIsLoopingAsync(true);
-            await soundObject.playAsync();
+            if(isMusicEnabled===null || isMusicEnabled!=='false'){
+                await soundObject.playAsync();
+            }
             // Your sound is playing!
         } catch (error) {
             // An error occurred!
@@ -46,11 +50,11 @@ export default class Router extends React.Component<RouterInterface, RouterState
     getCurrentView() {
         switch (this.state.pageView) {
             case PageView.Menu:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject}></Menu>;
             case PageView.Puzzle:
                 return this.getPuzzleByDifficulty();
             default:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject}></Menu>;
         }
     }
 

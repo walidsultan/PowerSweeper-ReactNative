@@ -35,6 +35,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private currentUserPhoto: string;
         private isSignedIn: boolean = false;
 
+        private isVibrationEnabled: boolean = true;
+        private areSoundsEnabled: boolean = true;
+
 
         constructor(props: any) {
                 super(props);
@@ -54,12 +57,33 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.setUsername();
 
                 this.loadSounds();
+                this.loadSettings();
         }
 
-        async loadSounds(){
-            await stretchSound.loadAsync(require('../../../assets/audio/sucked.wav'));
-            await explodeSound.loadAsync(require('../../../assets/audio/explode.wav'));
-            await succeedSound.loadAsync(require('../../../assets/audio/succeed.wav'));
+        loadSettings() {
+                AsyncStorage.multiGet(['areSoundsEnabled', 'isVibrationEnabled'], (err, stores) => {
+                        if (err) {
+                                console.log(err);
+                        }
+                        stores.map((result, i, store) => {
+                                console.log(result);
+                                let key = store[i][0];
+                                let value = store[i][1];
+                                if (key == "areSoundsEnabled" && value) {
+                                        this.areSoundsEnabled = (value === 'true');
+                                }
+                                if (key == "isVibrationEnabled" && value) {
+                                        this.isVibrationEnabled = (value === 'true');
+                                }
+                        });
+                });
+
+        }
+
+        async loadSounds() {
+                await stretchSound.loadAsync(require('../../../assets/audio/sucked.wav'));
+                await explodeSound.loadAsync(require('../../../assets/audio/explode.wav'));
+                await succeedSound.loadAsync(require('../../../assets/audio/succeed.wav'));
         }
 
         setUsername() {
@@ -136,8 +160,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (boardState.blocks[left][top].HasMine) {
                         if (this.isAnyBlockClicked) {
                                 this.isMineClicked = true;
-                                explodeSound.setPositionAsync(0);
-                                explodeSound.playAsync();
+                                if (this.areSoundsEnabled) {
+                                        explodeSound.setPositionAsync(0);
+                                        explodeSound.playAsync();
+                                }
                                 for (let row of boardState.blocks) {
                                         for (let block of row) {
                                                 if (!block.IsClicked) {
@@ -150,7 +176,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         }
                                 }
                                 boardState.blocks[left][top].IsClicked = true;
-                                Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
+                                if (this.isVibrationEnabled) {
+                                        Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
+                                }
 
                         } else {
                                 // make sure the first click is not a mine
@@ -215,7 +243,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 blocksStates[left][top].Value = value;
                 blocksStates[left][top].MarkedState = 0;
                 if (value === 0) {
-                        if(!this.isMineClicked){
+                        if (!this.isMineClicked && this.areSoundsEnabled) {
                                 stretchSound.setPositionAsync(0);
                                 stretchSound.playAsync();
                         }
@@ -228,6 +256,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         handleRightClick(left: number, top: number) {
+                if (this.isVibrationEnabled) {
+                        Vibration.vibrate(100, false);
+                }
                 if (!this.isMineClicked) {
                         let blocksStates = this.state.blocks;
                         if (blocksStates[left][top].MarkedState === MineType.Large) {
@@ -296,8 +327,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
                                 if (this.checkIfLevelIsSolved()) {
                                         //play sound
-                                        succeedSound.setPositionAsync(0);
-                                        succeedSound.playAsync();
+                                        if (this.areSoundsEnabled) {
+                                                succeedSound.setPositionAsync(0);
+                                                succeedSound.playAsync();
+                                        }
 
                                         let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Congrats!', alertMessage: 'You did it! Play again?' } });
                                         this.state.alertState.showAlert = true;

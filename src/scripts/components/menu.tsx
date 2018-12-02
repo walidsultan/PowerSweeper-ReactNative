@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage, Switch } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
@@ -15,6 +15,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     private menuRef: any;
     private popupWidthRatio: number = 0.6;
     private feedbackText: string;
+
     constructor(props: any) {
         super(props);
         this.state = new MenuState();
@@ -23,7 +24,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         this.updateDimensions = this.updateDimensions.bind(this);
 
         // AsyncStorage.multiRemove(['name', 'photoUrl']);
-        
+
         AsyncStorage.multiGet(['name', 'photoUrl'], (err, stores) => {
             if (err) {
                 console.log(err);
@@ -63,6 +64,12 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             height: 36
         }
 
+        let settingsImageStyle: StyleProp<ImageStyle> = {
+            width: 50,
+            height: 50,
+            tintColor: '#fff'
+        }
+
         return <View ref={this.menuRef} style={this.state.fontLoaded ? MenuStyles.container : undefined}>
             <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
             <View style={MenuStyles.titleContainer}>
@@ -93,10 +100,16 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
             </View>
             {!this.state.isSignedIn && <Animated.View style={[MenuStyles.signInImageContainer, { opacity: this.state.signInButtonOpacity }]}>
-                <TouchableHighlight onPress={async () => {await this.signIn(); }} underlayColor="#ddd">
+                <TouchableHighlight onPress={async () => { await this.signIn(); }} underlayColor="#ddd">
                     <Image source={require('../../../assets/images/google_signin_light.png')} style={signInImageStyle}></Image>
                 </TouchableHighlight>
             </Animated.View>}
+
+            <View style={MenuStyles.settingsContainer}>
+                <TouchableHighlight onPress={() => { this.onSettingsClick(); }} underlayColor="#ddd">
+                    <Image source={require('../../../assets/images/settings.png')} style={settingsImageStyle}></Image>
+                </TouchableHighlight>
+            </View>
 
             <LevelDifficulty showPopup={this.state.showNewLevelPopup}
                 onCloseClick={() => this.OnLevelDifficultyCloseClick()}
@@ -160,8 +173,50 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     <HighScores></HighScores>
                 </View>
             </MenuContent>
+
+
+            <MenuContent
+                onCloseClick={() => this.onMenuContentCloseClick()}
+                title='Settings'
+                showPopup={this.state.showSettingsPopup}
+            >
+                <View style={MenuStyles.settingsPopupContainer}>
+                    <View style={MenuStyles.settingsItem}>
+                        <Text>Music</Text>
+                        <Switch value={this.state.isMusicEnabled} onValueChange={ this.onMusicToggle} style={MenuStyles.settingsSwitch}></Switch>
+                    </View>
+                    <View style={MenuStyles.settingsItem}>
+                        <Text>Sounds</Text>
+                        <Switch value={this.state.areSoundsEnabled} onValueChange={ this.onSoundsToggle} style={MenuStyles.settingsSwitch}></Switch>
+                    </View>
+                    <View style={MenuStyles.settingsItem}>
+                        <Text>Vibration</Text>
+                        <Switch value={this.state.isVibrationEnabled} onValueChange={ this.onVibrationToggle} style={MenuStyles.settingsSwitch}></Switch>
+                    </View>
+                </View>
+            </MenuContent>
         </View >;
     }
+
+    onMusicToggle = (value:any) => {
+        this.setState({ isMusicEnabled: value});
+        AsyncStorage.setItem('isMusicEnabled',value.toString());
+        if(value){
+            this.props.musicReference.playAsync();
+        }else{
+            this.props.musicReference.stopAsync();
+        }
+     }
+
+     onSoundsToggle = (value:any) => {
+        this.setState({ areSoundsEnabled: value});
+        AsyncStorage.setItem('areSoundsEnabled',value.toString());
+     }
+
+     onVibrationToggle = (value:any) => {
+        this.setState({ isVibrationEnabled: value});
+        AsyncStorage.setItem('isVibrationEnabled',value.toString());
+     }
 
     showActivity() {
         if (this.state.isSendingFeedback) {
@@ -173,8 +228,37 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         }
     }
 
+    onSettingsClick() {
+        AsyncStorage.multiGet(['isVibrationEnabled', 'isMusicEnabled', 'areSoundsEnabled'], (err, stores) => {
+            if (err) {
+                console.log(err);
+            }
+            stores.map((result, i, store) => {
+                console.log(result);
+                let key = store[i][0];
+                let value = store[i][1];
+                if (key == "isVibrationEnabled" && value) {
+                      this.setState({ isVibrationEnabled: (value === 'true') });
+                }
+
+                if (key == "isMusicEnabled" && value) {
+                    this.setState({ isMusicEnabled: (value === 'true') });
+                }
+
+                if (key == "areSoundsEnabled" && value) {
+                    this.setState({ areSoundsEnabled: (value === 'true') });
+                }
+            });
+        });
+
+        this.setState({ showSettingsPopup: true });
+    }
+
     onMenuContentCloseClick() {
-        this.setState({ showFeedbackPopup: false, showInstructionsPopup: false, showHighScoresPopup: false });
+        this.setState({
+            showFeedbackPopup: false, showInstructionsPopup: false, showHighScoresPopup: false,
+            showSettingsPopup: false
+        });
     }
 
     OnInstructionsClick() {
