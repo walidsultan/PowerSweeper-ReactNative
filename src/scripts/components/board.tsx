@@ -19,7 +19,6 @@ const succeedSound = new Expo.Audio.Sound();
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
         private isAnyBlockClicked = false;
-        private shouldCheckIfLevelIsSolved = false;
         private isMineClicked: boolean = false;
         private puzzleRef: any;
         private panResponder: any;
@@ -193,8 +192,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         boardState.blocks[left][top].MarkedState = 0;
                         this.setBlockValues(left, top, boardState.blocks);
                 }
-                this.setState({ blocks: boardState.blocks });
-                this.shouldCheckIfLevelIsSolved = true;
+                this.setState({ blocks: boardState.blocks },()=>this.onMineStateChanged());
 
         }
 
@@ -266,8 +264,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         } else {
                                 blocksStates[left][top].MarkedState++;
                         }
-                        this.setState(Object.assign(this.state, { blocks: blocksStates }));
-                        this.shouldCheckIfLevelIsSolved = true;
+                        this.setState(Object.assign(this.state, { blocks: blocksStates }),()=>this.onMineStateChanged());
                 }
         }
 
@@ -322,9 +319,9 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 return puzzle;
         }
 
-        componentDidUpdate() {
+        onMineStateChanged() {
                 if (!this.state.alertState.showAlert) {
-                        if (this.shouldCheckIfLevelIsSolved && !this.isMineClicked) {
+                        if (!this.isMineClicked) {
                                 if (this.checkIfLevelIsSolved()) {
                                         //play sound
                                         if (this.areSoundsEnabled) {
@@ -341,16 +338,19 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                                         this.setState(newState);
                                 }
-
-                                this.shouldCheckIfLevelIsSolved = false;
-                        }
-
-                        if (this.isMineClicked) {
-                                let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
-                                this.setState(newState);
-                                this.isMineClicked = false;
                         }
                 }
+        }
+
+
+        componentDidUpdate() {
+
+                if (this.isMineClicked) {
+                        let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
+                        this.setState(newState);
+                        this.isMineClicked = false;
+                }
+
         }
 
         componentDidMount() {
