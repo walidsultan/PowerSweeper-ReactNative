@@ -39,12 +39,12 @@ const MenuStyles = StyleSheet.create({
     },
     title: {
         flexDirection: 'row',
-        fontFamily: 'funkyFont',
+        fontFamily: 'bladeFont',
         fontWeight: '400',
         color: '#fff',
         alignItems: 'center',
-        fontSize: 80,
-        marginBottom: 10
+        fontSize: 45,
+        marginBottom: 25
 
     },
     instructions: {

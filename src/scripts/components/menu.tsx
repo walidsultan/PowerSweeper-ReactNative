@@ -128,7 +128,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                         data={[
                             { key: '\u2022 Tap and hold on any block to mark a mine.' },
                             { key: '\u2022 There are three types of mines, each type has a different power.' },
-                            { key: '\u2022 To switch to a different mine, tab and hold on the same block multiple times.' },
+                            { key: '\u2022 To switch to a different mine, tap and hold on the same block multiple times, or hold the tap longer.' },
                             { key: '\u2022 The goal is to locate all the mines.' },
                             { key: '\u2022 Small=1 Medium=2 Large=3' },
                         ]}
@@ -305,6 +305,10 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             'funkyFont': require('../../../assets/fonts/KBZipaDeeDooDah.ttf')
         });
 
+        await Font.loadAsync({
+            'bladeFont': require('../../../assets/fonts/blade.ttf')
+        });
+
         this.setState({ fontLoaded: true });
         this.updateDimensions();
     }
@@ -358,6 +362,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             }
 
         } catch (e) {
+            this.feedbackText= "error: "+e;
+            this.OnSendFeedbackClick();
             console.log("error", e)
         }
     }
