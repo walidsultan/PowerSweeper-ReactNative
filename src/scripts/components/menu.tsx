@@ -349,7 +349,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     async signIn() {
         try {
             const result = await Expo.Google.logInAsync({
-                androidClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
+                androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
                 //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
                 scopes: ["profile", "email"]
             });
@@ -358,6 +358,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 ['photoUrl', result.user.photoUrl]]);
                 this.setState({ isSignedIn: true });
             } else {
+                this.feedbackText= "error: "+ result.type;
+                this.OnSendFeedbackClick();
                 console.log("cancelled")
             }
 
