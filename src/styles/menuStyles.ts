@@ -43,7 +43,7 @@ const MenuStyles = StyleSheet.create({
         fontWeight: '400',
         color: '#fff',
         alignItems: 'center',
-        fontSize: 45,
+        fontSize: 40,
         marginBottom: 25
 
     },
