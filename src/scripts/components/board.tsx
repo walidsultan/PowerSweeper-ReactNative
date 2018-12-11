@@ -354,8 +354,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         componentDidUpdate() {
 
-              
-
         }
 
         componentDidMount() {
@@ -572,6 +570,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 AsyncStorage.multiSet([['name', result.user.name],
                                 ['photoUrl', result.user.photoUrl]]);
                                 this.isSignedIn = true;
+                                this.currentUsername= result.user.name;
+                                this.currentUserPhoto=result.user.photoUrl;
                                 this.saveHighScore(this.puzzleDuration);
                                 this.saveLog("User: " + result.user.name + " logged in successfully.");
                         } else {
