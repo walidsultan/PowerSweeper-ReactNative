@@ -7,7 +7,7 @@ import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
 import Alert from './Alert';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, AsyncStorage } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, AsyncStorage, Text, TouchableHighlight } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
 import * as Expo from "expo";
@@ -37,6 +37,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private isVibrationEnabled: boolean = true;
         private areSoundsEnabled: boolean = true;
 
+        private puzzleDuration: number;
 
         constructor(props: any) {
                 super(props);
@@ -179,7 +180,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (this.isVibrationEnabled) {
                                         Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
                                 }
-                                this.saveLog("User clicked mine -- Difficulty: "+ this.props.difficulty);
+                                this.saveLog("User clicked mine -- Difficulty: " + this.props.difficulty);
                         } else {
                                 // make sure the first click is not a mine
                                 let newBlocks: BlockType[][] = null;
@@ -334,25 +335,26 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         this.state.alertState.showAlert = true;
                                         //get the time the player took to solve the puzzle
                                         var endDate = new Date();
-                                        let puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
-                                        this.saveHighScore(puzzleDuration);
+                                        this.puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
+                                        this.saveHighScore(this.puzzleDuration);
 
                                         this.setState(newState);
 
-                                        this.saveLog("User solved level -- Difficulty: "+ this.props.difficulty);
+                                        this.saveLog("User solved level -- Difficulty: " + this.props.difficulty);
                                 }
                         }
+                }
+
+                if (this.isMineClicked) {
+                        let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
+                        this.setState(newState);
                 }
         }
 
 
         componentDidUpdate() {
 
-                if (this.isMineClicked) {
-                        let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
-                        this.setState(newState);
-                        this.isMineClicked = false;
-                }
+              
 
         }
 
@@ -559,6 +561,30 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 });
         }
 
+        async signIn() {
+                try {
+                        const result = await Expo.Google.logInAsync({
+                                androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
+                                //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
+                                scopes: ["profile", "email"]
+                        });
+                        if (result.type === "success") {
+                                AsyncStorage.multiSet([['name', result.user.name],
+                                ['photoUrl', result.user.photoUrl]]);
+                                this.isSignedIn = true;
+                                this.saveHighScore(this.puzzleDuration);
+                                this.saveLog("User: " + result.user.name + " logged in successfully.");
+                        } else {
+                                this.saveLog("error: " + result.type)
+                        }
+
+                } catch (e) {
+                        this.saveLog("error: " + e)
+                        console.log("error", e)
+                }
+                this.props.onRedirect(PageView.Menu);
+        }
+
         render() {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
 
@@ -581,6 +607,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         height: undefined
                 }
 
+                let signInImageStyle: StyleProp<ImageStyle> = {
+                        width: 150,
+                        height: 36
+                }
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
                                 <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
@@ -596,7 +626,16 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         onOkClick={() => this.onAlertOkClick()}
                                         onCancelClick={() => this.onAlertCancel()}
                                         onCloseClick={() => this.onAlertClose()}
-                                ></Alert>
+                                >
+                                        {!this.isSignedIn && !this.isMineClicked && <View style={BoardStyles.SignIn}><Text>You can also sign in to add your name to the leaderboard</Text>
+                                                <View style={BoardStyles.SignInImage}>
+                                                        <TouchableHighlight onPress={async () => { await this.signIn(); }} underlayColor="#ddd"  >
+                                                                <Image source={require('../../../assets/images/google_signin_light.png')} style={signInImageStyle}></Image>
+                                                        </TouchableHighlight>
+                                                </View>
+                                        </View>
+                                        }
+                                </Alert>
                         </View>
                 );
         }
