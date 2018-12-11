@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 8464,
+  "expoServerNgrokUrl": "https://et-bjp.wsultan.powersweeper-reactnative.exp.direct",
+  "packagerNgrokUrl": "https://packager.et-bjp.wsultan.powersweeper-reactnative.exp.direct",
+  "ngrokPid": 17292
 }

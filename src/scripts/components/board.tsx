@@ -57,6 +57,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.loadSounds();
                 this.loadSettings();
+                this.saveLog("Start new game -- Difficulty: " + this.props.difficulty);
         }
 
         loadSettings() {
@@ -178,7 +179,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (this.isVibrationEnabled) {
                                         Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
                                 }
-
+                                this.saveLog("User clicked mine -- Difficulty: "+ this.props.difficulty);
                         } else {
                                 // make sure the first click is not a mine
                                 let newBlocks: BlockType[][] = null;
@@ -192,7 +193,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         boardState.blocks[left][top].MarkedState = 0;
                         this.setBlockValues(left, top, boardState.blocks);
                 }
-                this.setState({ blocks: boardState.blocks },()=>this.onMineStateChanged());
+                this.setState({ blocks: boardState.blocks }, () => this.onMineStateChanged());
 
         }
 
@@ -264,7 +265,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         } else {
                                 blocksStates[left][top].MarkedState++;
                         }
-                        this.setState(Object.assign(this.state, { blocks: blocksStates }),()=>this.onMineStateChanged());
+                        this.setState(Object.assign(this.state, { blocks: blocksStates }), () => this.onMineStateChanged());
                 }
         }
 
@@ -337,6 +338,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         this.saveHighScore(puzzleDuration);
 
                                         this.setState(newState);
+
+                                        this.saveLog("User solved level -- Difficulty: "+ this.props.difficulty);
                                 }
                         }
                 }
@@ -521,6 +524,22 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         onAlertCancel() {
                 this.props.onRedirect(PageView.Menu);
+        }
+
+        saveLog(text: string) {
+                return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
+                        method: 'POST',
+                        headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                                'Text': text
+                        })
+                })
+                        .catch((error) => {
+                                console.error(error);
+                        });
         }
 
         saveHighScore(time: number) {
