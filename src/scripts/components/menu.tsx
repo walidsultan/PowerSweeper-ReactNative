@@ -183,40 +183,40 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 <View style={MenuStyles.settingsPopupContainer}>
                     <View style={MenuStyles.settingsItem}>
                         <Text>Music</Text>
-                        <Switch value={this.state.isMusicEnabled} onValueChange={ this.onMusicToggle} style={MenuStyles.settingsSwitch}></Switch>
+                        <Switch value={this.state.isMusicEnabled} onValueChange={this.onMusicToggle} style={MenuStyles.settingsSwitch}></Switch>
                     </View>
                     <View style={MenuStyles.settingsItem}>
                         <Text>Sounds</Text>
-                        <Switch value={this.state.areSoundsEnabled} onValueChange={ this.onSoundsToggle} style={MenuStyles.settingsSwitch}></Switch>
+                        <Switch value={this.state.areSoundsEnabled} onValueChange={this.onSoundsToggle} style={MenuStyles.settingsSwitch}></Switch>
                     </View>
                     <View style={MenuStyles.settingsItem}>
                         <Text>Vibration</Text>
-                        <Switch value={this.state.isVibrationEnabled} onValueChange={ this.onVibrationToggle} style={MenuStyles.settingsSwitch}></Switch>
+                        <Switch value={this.state.isVibrationEnabled} onValueChange={this.onVibrationToggle} style={MenuStyles.settingsSwitch}></Switch>
                     </View>
                 </View>
             </MenuContent>
         </View >;
     }
 
-    onMusicToggle = (value:any) => {
-        this.setState({ isMusicEnabled: value});
-        AsyncStorage.setItem('isMusicEnabled',value.toString());
-        if(value){
+    onMusicToggle = (value: any) => {
+        this.setState({ isMusicEnabled: value });
+        AsyncStorage.setItem('isMusicEnabled', value.toString());
+        if (value) {
             this.props.musicReference.playAsync();
-        }else{
+        } else {
             this.props.musicReference.stopAsync();
         }
-     }
+    }
 
-     onSoundsToggle = (value:any) => {
-        this.setState({ areSoundsEnabled: value});
-        AsyncStorage.setItem('areSoundsEnabled',value.toString());
-     }
+    onSoundsToggle = (value: any) => {
+        this.setState({ areSoundsEnabled: value });
+        AsyncStorage.setItem('areSoundsEnabled', value.toString());
+    }
 
-     onVibrationToggle = (value:any) => {
-        this.setState({ isVibrationEnabled: value});
-        AsyncStorage.setItem('isVibrationEnabled',value.toString());
-     }
+    onVibrationToggle = (value: any) => {
+        this.setState({ isVibrationEnabled: value });
+        AsyncStorage.setItem('isVibrationEnabled', value.toString());
+    }
 
     showActivity() {
         if (this.state.isSendingFeedback) {
@@ -238,7 +238,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 let key = store[i][0];
                 let value = store[i][1];
                 if (key == "isVibrationEnabled" && value) {
-                      this.setState({ isVibrationEnabled: (value === 'true') });
+                    this.setState({ isVibrationEnabled: (value === 'true') });
                 }
 
                 if (key == "isMusicEnabled" && value) {
@@ -295,6 +295,23 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 'Text': this.feedbackText
             })
         }).then(() => this.setState({ isSendingFeedback: false, isFeedbackSent: true }))
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+
+    saveLog(text: string) {
+        return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'Text': text
+            })
+        })
             .catch((error) => {
                 console.error(error);
             });
@@ -357,15 +374,13 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 AsyncStorage.multiSet([['name', result.user.name],
                 ['photoUrl', result.user.photoUrl]]);
                 this.setState({ isSignedIn: true });
+                this.saveLog("User: " + result.user.name +" logged in successfully.")
             } else {
-                this.feedbackText= "error: "+ result.type;
-                this.OnSendFeedbackClick();
-                console.log("cancelled")
+                this.saveLog("error: " + result.type)
             }
 
         } catch (e) {
-            this.feedbackText= "error: "+e;
-            this.OnSendFeedbackClick();
+            this.saveLog("error: " + e)
             console.log("error", e)
         }
     }

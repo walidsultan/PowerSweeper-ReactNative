@@ -17,6 +17,9 @@ export default class Alert extends React.Component<AlertInterface, {}> {
             >
                 <View style={AlertStyles.alertContainer}>
                     <View ><Text>{this.props.message}</Text></View>
+                    <View>
+                      {this.props.children}
+                    </View>
                     <View style={AlertStyles.buttonsContainer}>
                         <TouchableHighlight onPress={() => this.props.onOkClick()} style={AlertStyles.button} underlayColor='#4db8ff'>
                             <Text style={AlertStyles.buttonText}>OK</Text>
