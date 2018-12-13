@@ -374,7 +374,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (e.nativeEvent.touches.length > 1) {
                                         return true;
                                 } else {
-                                        if (Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10) {
+                                        if (Math.abs(gestureState.dx) > 30 || Math.abs(gestureState.dy) > 30) {
                                                 return true;
                                         } else {
                                                 return false;
