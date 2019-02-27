@@ -108,6 +108,13 @@ const MenuStyles = StyleSheet.create({
     },
     settingsSwitch: {
         marginLeft: 10
+    },
+    privacyPolicy:{
+        flex:1,
+        justifyContent: 'flex-end'
+    },
+    privacyPolicyText:{
+        textDecorationLine: 'underline'
     }
 });
 

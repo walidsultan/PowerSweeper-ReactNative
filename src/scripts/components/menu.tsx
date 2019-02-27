@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage, Switch } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage, Switch, Linking } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
 import { Font } from 'expo';
 import MenuContent from './MenuContent';
@@ -192,6 +192,10 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     <View style={MenuStyles.settingsItem}>
                         <Text>Vibration</Text>
                         <Switch value={this.state.isVibrationEnabled} onValueChange={this.onVibrationToggle} style={MenuStyles.settingsSwitch}></Switch>
+                    </View>
+
+                     <View style={MenuStyles.privacyPolicy}>
+                        <Text style={MenuStyles.privacyPolicyText} onPress={() => Linking.openURL('http://walidsultan.net/games/powersweeperreact/privacy_policy.html')}>Privacy Policy</Text>
                     </View>
                 </View>
             </MenuContent>
