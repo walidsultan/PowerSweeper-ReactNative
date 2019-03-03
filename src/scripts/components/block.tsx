@@ -46,7 +46,7 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     if (this.props.MarkedState > 0) {
       blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
     } else {
-      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && !this.props.IsTutorial && <Text>{this.props.Value}</Text>)}</Text>
+      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
     }
 
     return (
@@ -101,7 +101,7 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     let styles: any[] = new Array(0);
     styles.push(BlockStyles.block);
 
-    if (this.props.IsClicked && !this.props.IsTutorial) {
+    if (this.props.IsClicked) {
       styles.push(BlockStyles.clicked);
     }
 

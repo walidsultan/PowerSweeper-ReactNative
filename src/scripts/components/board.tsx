@@ -61,21 +61,25 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
 
                 if (this.props.isTutorial) {
-                        this.startTutorial()
+                       // this.startTutorial()
                 }
         }
 
         startTutorial() {
-                let boardState = this.state.blocks
-                for (let row of boardState) {
+                let blocksState = this.state.blocks
+                for (let row of blocksState) {
                         for (let block of row) {
-                                if (!block.IsClicked) {
-                                        this.setBlockValues(block.Left, block.Top, boardState);
-                                }
+                                // if (!block.IsClicked) {
+                                //         this.setBlockValues(block.Left, block.Top, boardState);
+                                // }
+                                if(block.HasMine) {
+                                        block.MarkedState= block.Mine
+                                }                               
+                                // console.log("Tutorial: block left:" + block.Left+", block top:" + block.Top+", has mine:"+ block.HasMine+", block value: "+ blockInfo.value );
                         }
                 }
 
-
+                this.setState(Object.assign(this.state, { blocks:blocksState}));
         }
 
         startupAnimationCompleted() {
@@ -86,19 +90,77 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         for (let xIndex in boardState.blocks) {
                                 for (let yIndex in boardState.blocks[xIndex]) {
 
+                                        if(boardState.blocks[xIndex][yIndex].HasMine) continue;
+
                                         let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
                                                 ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
-                                        if (boardState.blocks[xIndex][yIndex].Value == 0 && isVisible) {
-                                                console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
-                                                boardState.blocks[xIndex][yIndex].Highlight = true;
-                                                isBlockHighlighted = true;
-                                                break;
+                                        if(isVisible){
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex));
+                                                if (blockInfo.value == 0 ) {
+                                                        console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
+                                                        boardState.blocks[xIndex][yIndex].Highlight = true;
+                                                        isBlockHighlighted = true;
+                                                        break;
+                                                }
                                         }
                                 }
                                 if (isBlockHighlighted) break;
                         }
                         this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
                 }
+        }
+
+        showTutorialNextStep(){
+                let boardState = this.state;
+                        let isBlockHighlighted = false;
+                        //Find mines
+                          for (let xIndex in boardState.blocks) {
+                                for (let yIndex in boardState.blocks[xIndex]) {
+                                        if(!boardState.blocks[xIndex][yIndex].IsClicked ||boardState.blocks[xIndex][yIndex].HasMine ) continue;
+
+                                        if(boardState.blocks[xIndex][yIndex].Value>0){
+                                                console.log("Mines step: left:"+ xIndex+", top: "+ yIndex);
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex));
+                                                let surroundingNonClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==false && 
+                                                                                                                       boardState.blocks[x.Position.X][x.Position.Y].MarkedState==0 ) ;
+                                                if(surroundingNonClickedBlocks.length==1){
+                                                        let targetMine= surroundingNonClickedBlocks[0];
+                                                        let surroundingMarkedMines= blockInfo.surroundingBlocks.filter(x=>boardState.blocks[x.Position.X][x.Position.Y].HasMine && boardState.blocks[x.Position.X][x.Position.Y].MarkedState>0);
+                                                      let markedMinesValue=0;
+                                                        if(surroundingMarkedMines.length>0){
+                                                               markedMinesValue=surroundingMarkedMines.map(x=>boardState.blocks[x.Position.X][x.Position.Y].Mine).reduce((x,y)=>x+y);
+                                                        }
+                                                        let targetMineValue= blockInfo.value- markedMinesValue;
+                                                        console.log("Mines step: mark mine, left: "+targetMine.Position.X+" top: "+targetMine.Position.Y + " mine value: "+targetMineValue );
+                                                        boardState.blocks[targetMine.Position.X][targetMine.Position.Y].Highlight = true;
+                                                        isBlockHighlighted = true;
+
+                                                        if(targetMineValue>0){
+                                                                for(let i =0; i<targetMineValue;i++){
+                                                                 this.handleRightClick(targetMine.Position.X,targetMine.Position.Y);
+                                                                }
+                                                        }else{
+                                                                this.handleBlockClick(targetMine.Position.X,targetMine.Position.Y);
+                                                        }
+
+                                                        break;
+                                                }
+                                        }
+                                }
+                                if (isBlockHighlighted) break;
+                        }
+
+                        if(!isBlockHighlighted){
+                                //Find common blocks
+                                for (let xIndex in boardState.blocks) {
+                                        for (let yIndex in boardState.blocks[xIndex]) {
+                                                
+                                        }
+                                }
+                        }
+
+                        this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
+
         }
 
         loadSettings() {
@@ -233,10 +295,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 } else {
                         this.isAnyBlockClicked = true;
                         boardState.blocks[left][top].MarkedState = 0;
+                        console.log("block clicked: left: "+left+", top: "+ top)
                         this.setBlockValues(left, top, boardState.blocks);
                 }
                 this.setState({ blocks: boardState.blocks }, () => this.onMineStateChanged());
 
+               
         }
 
         pushBlock(blocks: BlockPointer[], left: number, top: number) {
@@ -246,6 +310,26 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         setBlockValues(left: number, top: number, blocksStates: BlockType[][]) {
+                let { value, surroundingBlocks }= this.calculateBlockInfo(left, top);
+
+                blocksStates[left][top].IsClicked = true;
+                blocksStates[left][top].Value = value;
+                blocksStates[left][top].MarkedState = 0;
+                blocksStates[left][top].Highlight= false;
+                if (value === 0) {
+                        if (!this.isMineClicked && this.areSoundsEnabled) {
+                                stretchSound.setPositionAsync(0);
+                                stretchSound.playAsync();
+                        }
+                        for (let block of surroundingBlocks) {
+                                this.setBlockValues(block.Position.X, block.Position.Y, blocksStates);
+                        }
+                } else {
+                        blocksStates[left][top].MarkedState = 0;
+                }
+        }
+
+        private calculateBlockInfo(left: number, top: number) {
                 let surroundingBlocks: BlockPointer[] = new Array();
                 if (left > 0) {
                         this.pushBlock(surroundingBlocks, left - 1, top);
@@ -256,7 +340,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 this.pushBlock(surroundingBlocks, left - 1, top + 1);
                         }
                 }
-
                 if (left < this.props.levelWidth - 1) {
                         this.pushBlock(surroundingBlocks, left + 1, top);
                         if (top > 0) {
@@ -266,34 +349,17 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 this.pushBlock(surroundingBlocks, left + 1, top + 1);
                         }
                 }
-
                 if (top > 0) {
                         this.pushBlock(surroundingBlocks, left, top - 1);
                 }
-
                 if (top < this.props.levelHeight - 1) {
                         this.pushBlock(surroundingBlocks, left, top + 1);
                 }
-
                 let value: number = 0;
                 for (let block of surroundingBlocks) {
                         value += block.Value;
                 }
-
-                blocksStates[left][top].IsClicked = true;
-                blocksStates[left][top].Value = value;
-                blocksStates[left][top].MarkedState = 0;
-                if (value === 0) {
-                        if (!this.isMineClicked && this.areSoundsEnabled && !this.props.isTutorial) {
-                                stretchSound.setPositionAsync(0);
-                                stretchSound.playAsync();
-                        }
-                        for (let block of surroundingBlocks) {
-                                this.setBlockValues(block.Position.X, block.Position.Y, blocksStates);
-                        }
-                } else {
-                        blocksStates[left][top].MarkedState = 0;
-                }
+                return { value, surroundingBlocks };
         }
 
         handleRightClick(left: number, top: number) {
@@ -307,6 +373,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         } else {
                                 blocksStates[left][top].MarkedState++;
                         }
+                        console.log("tutorial: right click -- "+ blocksStates[left][top].MarkedState );
+                        if(this.props.isTutorial && blocksStates[left][top].MarkedState == blocksStates[left][top].Mine){
+                                blocksStates[left][top].Highlight=false;
+                                this.showTutorialNextStep();
+                        }
+
                         this.setState(Object.assign(this.state, { blocks: blocksStates }), () => this.onMineStateChanged());
                 }
         }
@@ -366,7 +438,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         onMineStateChanged() {
                 if (!this.state.alertState.showAlert) {
                         if (!this.isMineClicked) {
-                                if (this.checkIfLevelIsSolved()) {
+                                if ( !this.props.isTutorial && this.checkIfLevelIsSolved()) {
                                         //play sound
                                         if (this.areSoundsEnabled) {
                                                 succeedSound.setPositionAsync(0);
@@ -390,6 +462,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (this.isMineClicked) {
                         let newState = Object.assign(this.state, { alertState: { showAlert: true, alertTitle: 'Game Over', alertMessage: 'You clicked on a mine. Play again?' } });
                         this.setState(newState);
+                }
+
+                if(this.props.isTutorial){
+                        this.showTutorialNextStep();
                 }
         }
 
