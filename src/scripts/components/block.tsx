@@ -32,13 +32,13 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     let imageStyle: StyleProp<ImageStyle> = {
       width: buttonStyle.width,
       height: buttonStyle.height,
-      opacity:1
+      opacity: 1
     }
 
     let styles = this.getBlockStyles();
     styles.push(buttonStyle);
 
-    if (this.props.IsClicked && this.props.HasMine) {
+    if (this.props.IsClicked && this.props.HasMine && !this.props.IsTutorial) {
       styles.push(BlockStyles.clickedMine);
     }
 
@@ -46,12 +46,12 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     if (this.props.MarkedState > 0) {
       blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
     } else {
-      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
+      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && !this.props.IsTutorial && <Text>{this.props.Value}</Text>)}</Text>
     }
 
     return (
       <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={() => this.onTouchEnd()} style={styles} underlayColor='#ddd'>
-          {blockContent}
+        {blockContent}
       </TouchableHighlight>
     );
   }
@@ -101,12 +101,21 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     let styles: any[] = new Array(0);
     styles.push(BlockStyles.block);
 
-    if (this.props.IsClicked) {
+    if (this.props.IsClicked && !this.props.IsTutorial) {
       styles.push(BlockStyles.clicked);
     }
 
-    if (this.props.MarkedState>0) {
+    if (this.props.MarkedState > 0) {
       styles.push(BlockStyles.marked);
+    }
+
+    if (this.props.Left == 0 && this.props.Top == 0) {
+      console.log("Get Block styles");
+    }
+
+    if (this.props.Highlight) {
+      console.log("Get Block styles -- Highlight");
+      styles.push(BlockStyles.highlight);
     }
 
     return styles;

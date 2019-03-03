@@ -21,12 +21,12 @@ export default class Router extends React.Component<RouterInterface, RouterState
     }
 
     async playBackGroundMusic() {
-        let isMusicEnabled= await  AsyncStorage.getItem('isMusicEnabled');
+        let isMusicEnabled = await AsyncStorage.getItem('isMusicEnabled');
 
         try {
             await soundObject.loadAsync(require('../../../assets/audio/background.mp3'));
             await soundObject.setIsLoopingAsync(true);
-            if(isMusicEnabled===null || isMusicEnabled!=='false'){
+            if (isMusicEnabled === null || isMusicEnabled !== 'false') {
                 await soundObject.playAsync();
             }
             // Your sound is playing!
@@ -50,12 +50,19 @@ export default class Router extends React.Component<RouterInterface, RouterState
     getCurrentView() {
         switch (this.state.pageView) {
             case PageView.Menu:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()}></Menu>;
             case PageView.Puzzle:
-                return this.getPuzzleByDifficulty();
+                return this.getPuzzleByDifficulty(false);
+            case PageView.Tutorial:
+                return this.getPuzzleByDifficulty(true);
             default:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()}></Menu>;
         }
+    }
+
+    onTutorial() {
+        this.setLevelDifficulty(Difficulty.Easy);
+        this.setView(PageView.Tutorial);
     }
 
     onNewLevel(difficulty: Difficulty) {
@@ -63,14 +70,14 @@ export default class Router extends React.Component<RouterInterface, RouterState
         this.setView(PageView.Puzzle);
     }
 
-    getPuzzleByDifficulty() {
+    getPuzzleByDifficulty(isTutorial: boolean) {
         switch (this.state.levelDifficulty) {
             case Difficulty.Easy:
-                return <Board bigMinesCount={1} mediumMinesCount={2} smallMinesCount={3} levelHeight={7} levelWidth={7} difficulty={Difficulty.Easy} onRedirect={(pv: any) => this.onRedirect(pv)} />;
+                return <Board bigMinesCount={1} mediumMinesCount={2} smallMinesCount={3} levelHeight={7} levelWidth={7} difficulty={Difficulty.Easy} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
             case Difficulty.Medium:
-                return <Board bigMinesCount={3} mediumMinesCount={5} smallMinesCount={7} levelHeight={10} levelWidth={10} difficulty={Difficulty.Medium} onRedirect={(pv: any) => this.onRedirect(pv)} />;
+                return <Board bigMinesCount={3} mediumMinesCount={5} smallMinesCount={7} levelHeight={10} levelWidth={10} difficulty={Difficulty.Medium} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
             case Difficulty.Hard:
-                return <Board bigMinesCount={6} mediumMinesCount={10} smallMinesCount={14} levelHeight={15} levelWidth={15} difficulty={Difficulty.Hard} onRedirect={(pv: any) => this.onRedirect(pv)} />;
+                return <Board bigMinesCount={6} mediumMinesCount={10} smallMinesCount={14} levelHeight={15} levelWidth={15} difficulty={Difficulty.Hard} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
             default:
                 return <div></div>;
         }

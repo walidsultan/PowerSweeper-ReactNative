@@ -8,4 +8,5 @@ export default interface BoardInterface {
     bigMinesCount: number;
     onRedirect: any;
     difficulty:Difficulty;
+    isTutorial:boolean;
 }

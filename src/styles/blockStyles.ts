@@ -41,6 +41,9 @@ const BlockStyles = StyleSheet.create({
    },
    marked:{
       backgroundColor: '#ddd'
+   },
+   highlight:{
+      backgroundColor:'#00FF00'
    }
    
 });

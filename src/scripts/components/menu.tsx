@@ -92,8 +92,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnFeedbackClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
-                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Feedback</Text>
+                    <TouchableHighlight onPress={() => { this.props.onTutorial(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
+                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Tutorial</Text>
                     </TouchableHighlight>
                 </View>
 

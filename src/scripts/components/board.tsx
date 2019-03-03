@@ -58,7 +58,47 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.loadSounds();
                 this.loadSettings();
-                this.saveLog("Start new game -- Difficulty: " + this.props.difficulty);
+                this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
+
+                if (this.props.isTutorial) {
+                        this.startTutorial()
+                }
+        }
+
+        startTutorial() {
+                let boardState = this.state.blocks
+                for (let row of boardState) {
+                        for (let block of row) {
+                                if (!block.IsClicked) {
+                                        this.setBlockValues(block.Left, block.Top, boardState);
+                                }
+                        }
+                }
+
+
+        }
+
+        startupAnimationCompleted() {
+                if (this.props.isTutorial) {
+                        console.log("Startup animation -- completed");
+                        let boardState = this.state;
+                        let isBlockHighlighted = false;
+                        for (let xIndex in boardState.blocks) {
+                                for (let yIndex in boardState.blocks[xIndex]) {
+
+                                        let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
+                                                ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
+                                        if (boardState.blocks[xIndex][yIndex].Value == 0 && isVisible) {
+                                                console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
+                                                boardState.blocks[xIndex][yIndex].Highlight = true;
+                                                isBlockHighlighted = true;
+                                                break;
+                                        }
+                                }
+                                if (isBlockHighlighted) break;
+                        }
+                        this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
+                }
         }
 
         loadSettings() {
@@ -138,6 +178,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 blockStates[i][j].Mine = this.mines[i][j] > 0 ? this.mines[i][j] : undefined;
                                 blockStates[i][j].Value = 0;
                                 blockStates[i][j].IsClicked = false;
+                                blockStates[i][j].Highlight = false;
                         }
                 }
                 return blockStates;
@@ -243,7 +284,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 blocksStates[left][top].Value = value;
                 blocksStates[left][top].MarkedState = 0;
                 if (value === 0) {
-                        if (!this.isMineClicked && this.areSoundsEnabled) {
+                        if (!this.isMineClicked && this.areSoundsEnabled && !this.props.isTutorial) {
                                 stretchSound.setPositionAsync(0);
                                 stretchSound.playAsync();
                         }
@@ -315,7 +356,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         HasMine={block.HasMine}
                                         Mine={block.Mine}
                                         IsClicked={block.IsClicked}
-                                        MarkedState={block.MarkedState} />);
+                                        MarkedState={block.MarkedState}
+                                        IsTutorial={this.props.isTutorial} Highlight={block.Highlight} />);
                         }
                 }
                 return puzzle;
@@ -336,7 +378,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         //get the time the player took to solve the puzzle
                                         var endDate = new Date();
                                         this.puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
-                                        this.saveHighScore(this.puzzleDuration);
+                                        this.saveHighScore(this.puzzleDuration, this.currentUsername, this.currentUserPhoto);
 
                                         this.setState(newState);
 
@@ -503,7 +545,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         }
                         this.puzzlePositionOffset.Y = -(puzzleHeight - Dimensions.get('window').height) / 2;
 
-                        Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y }, bounciness: 10 }).start();
+                        Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y }, bounciness: 10 }).start(() => this.startupAnimationCompleted());
                 });
 
                 this.state.blockSize.setValue(blockSize);
@@ -542,7 +584,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         });
         }
 
-        saveHighScore(time: number) {
+        saveHighScore(time: number, username: string, photoUrl: string) {
                 return fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
                         method: 'POST',
                         headers: {
@@ -550,10 +592,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                                "Name": this.currentUsername,
+                                "Name": username,
                                 "Time": time,
                                 "Difficulty": this.props.difficulty,
-                                "PhotoUrl": this.currentUserPhoto,
+                                "PhotoUrl": photoUrl,
                                 "isSignedIn": this.isSignedIn
                         })
                 });
@@ -570,9 +612,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 AsyncStorage.multiSet([['name', result.user.name],
                                 ['photoUrl', result.user.photoUrl]]);
                                 this.isSignedIn = true;
-                                this.currentUsername= result.user.name;
-                                this.currentUserPhoto=result.user.photoUrl;
-                                this.saveHighScore(this.puzzleDuration);
+                                this.saveHighScore(this.puzzleDuration, result.user.name, result.user.photoUrl);
                                 this.saveLog("User: " + result.user.name + " logged in successfully.");
                         } else {
                                 this.saveLog("error: " + result.type)
