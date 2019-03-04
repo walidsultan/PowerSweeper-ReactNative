@@ -166,8 +166,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                                                 console.log("Tutorial Matching surroundingNonClickedBlocks count -- "+ surroundingNonClickedBlocks.length);
                                                 //Surrounding clicked blocks of the same value
-                                                let surroundingClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==true && 
-                                                        boardState.blocks[x.Position.X][x.Position.Y].Value== blockInfo.value);
+                                                let surroundingClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==true);
                                                 console.log("Tutorial Matching surroundingClickedBlocks count -- "+ surroundingClickedBlocks.length);
                                                 for(let clickedBlock of surroundingClickedBlocks){
                                                         let clickedBlockInfo = this.calculateBlockInfo(clickedBlock.Position.X, clickedBlock.Position.Y,true);
@@ -183,14 +182,29 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                 //any non matching block should be zero
                                                                 let clickedBlockNeighbors= clickedBlockInfo.surroundingBlocks.filter(x=>boardState.blocks[x.Position.X][x.Position.Y].IsClicked== false &&
                                                                         boardState.blocks[x.Position.X][x.Position.Y].MarkedState== 0 );
-                                                                for(let clickedBlockNeighbor of clickedBlockNeighbors){
-                                                                        let isNotMatching= surroundingNonClickedBlocks.filter(x=>x.Position.X ==clickedBlockNeighbor.Position.X && x.Position.Y ==clickedBlockNeighbor.Position.Y).length==0 ;
-                                                                        if(isNotMatching){
-                                                                                console.log("Tutorial Matching Blocks --  Highlight -- Left: "+ clickedBlockNeighbor.Position.X+" top:"+clickedBlockNeighbor.Position.Y);
-                                                                                isBlockHighlighted=true;
-                                                                                 boardState.blocks[clickedBlockNeighbor.Position.X][clickedBlockNeighbor.Position.Y].Highlight=true;
-                                                                                 break;
+
+                                                                if(clickedBlock.Value== blockInfo.value || (clickedBlockNeighbors.length-surroundingNonClickedBlocks.length==1)){
+                                                                        let targetMineValue= clickedBlock.Value-blockInfo.value;
+                                                                        for(let clickedBlockNeighbor of clickedBlockNeighbors){
+                                                                                let isNotMatching= surroundingNonClickedBlocks.filter(x=>x.Position.X ==clickedBlockNeighbor.Position.X && x.Position.Y ==clickedBlockNeighbor.Position.Y).length==0 ;
+                                                                                if(isNotMatching){
+                                                                                        console.log("Tutorial Matching Blocks --  Highlight -- Left: "+ clickedBlockNeighbor.Position.X+" top:"+clickedBlockNeighbor.Position.Y+" target mine value: "+ targetMineValue);
+                                                                                        isBlockHighlighted=true;
+                                                                                        boardState.blocks[clickedBlockNeighbor.Position.X][clickedBlockNeighbor.Position.Y].Highlight=true;
+                                                                                      
+                                                                                        // if(targetMineValue>0){
+                                                                                        //         for(let i =0; i<targetMineValue;i++){
+                                                                                        //          this.handleRightClick(clickedBlockNeighbor.Position.X,clickedBlockNeighbor.Position.Y);
+                                                                                        //         }
+                                                                                        // }else{
+                                                                                        //         this.handleBlockClick(clickedBlockNeighbor.Position.X,clickedBlockNeighbor.Position.Y);
+                                                                                        // }
+
+                                                                                        break;
+                                                                                }
                                                                         }
+                                                                       
+                                                                      
                                                                 }
 
                                                         }
@@ -231,6 +245,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                         console.log("Tutorial Matching marked state  --  Highlight -- Left: "+ block.Position.X+" top:"+block.Position.Y);
                                                                         isBlockHighlighted=true;
                                                                         neighborBlock.Highlight=true;
+
+                                                                        
+                                                                        this.handleBlockClick(neighborBlock.Left,neighborBlock.Top);
+
                                                                          break; 
                                                                 }
                                                         }                                                      
