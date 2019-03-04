@@ -95,7 +95,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
                                                 ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
                                         if(isVisible){
-                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex));
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex),false);
                                                 if (blockInfo.value == 0 ) {
                                                         console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
                                                         boardState.blocks[xIndex][yIndex].Highlight = true;
@@ -120,7 +120,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                                         if(boardState.blocks[xIndex][yIndex].Value>0){
                                                 console.log("Mines step: left:"+ xIndex+", top: "+ yIndex);
-                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex));
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex),false);
                                                 let surroundingNonClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==false && 
                                                                                                                        boardState.blocks[x.Position.X][x.Position.Y].MarkedState==0 ) ;
                                                 if(surroundingNonClickedBlocks.length==1){
@@ -151,11 +151,93 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         }
 
                         if(!isBlockHighlighted){
+                                console.log("Tutorial Matching Blocks -- start");
                                 //Find common blocks
                                 for (let xIndex in boardState.blocks) {
                                         for (let yIndex in boardState.blocks[xIndex]) {
-                                                
+                                               if(!(boardState.blocks[xIndex][yIndex].IsClicked && boardState.blocks[xIndex][yIndex].Value>0)) continue;
+
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex),true);
+                                                console.log("Tutorial Matching Blocks -- main block -- left:" + xIndex + " top: "+ yIndex+ " value: "+boardState.blocks[xIndex][yIndex].Value);
+                                                let surroundingNonClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==false && 
+                                                        boardState.blocks[x.Position.X][x.Position.Y].MarkedState==0);
+
+                                                if(surroundingNonClickedBlocks.length==0) continue;
+
+                                                console.log("Tutorial Matching surroundingNonClickedBlocks count -- "+ surroundingNonClickedBlocks.length);
+                                                //Surrounding clicked blocks of the same value
+                                                let surroundingClickedBlocks=blockInfo.surroundingBlocks.filter(x=> boardState.blocks[x.Position.X][x.Position.Y].IsClicked==true && 
+                                                        boardState.blocks[x.Position.X][x.Position.Y].Value== blockInfo.value);
+                                                console.log("Tutorial Matching surroundingClickedBlocks count -- "+ surroundingClickedBlocks.length);
+                                                for(let clickedBlock of surroundingClickedBlocks){
+                                                        let clickedBlockInfo = this.calculateBlockInfo(clickedBlock.Position.X, clickedBlock.Position.Y,true);
+                                                        let hasCommonBlocks=true;
+                                                        for(let nonClickedBlock of surroundingNonClickedBlocks){
+                                                                let isMatching= clickedBlockInfo.surroundingBlocks.filter(x=>x.Position.X==nonClickedBlock.Position.X && x.Position.Y== nonClickedBlock.Position.Y).length>0;
+                                                                if(!isMatching){
+                                                                        hasCommonBlocks=false;
+                                                                        break;
+                                                                }
+                                                        }
+                                                        if(hasCommonBlocks){
+                                                                //any non matching block should be zero
+                                                                let clickedBlockNeighbors= clickedBlockInfo.surroundingBlocks.filter(x=>boardState.blocks[x.Position.X][x.Position.Y].IsClicked== false &&
+                                                                        boardState.blocks[x.Position.X][x.Position.Y].MarkedState== 0 );
+                                                                for(let clickedBlockNeighbor of clickedBlockNeighbors){
+                                                                        let isNotMatching= surroundingNonClickedBlocks.filter(x=>x.Position.X ==clickedBlockNeighbor.Position.X && x.Position.Y ==clickedBlockNeighbor.Position.Y).length==0 ;
+                                                                        if(isNotMatching){
+                                                                                console.log("Tutorial Matching Blocks --  Highlight -- Left: "+ clickedBlockNeighbor.Position.X+" top:"+clickedBlockNeighbor.Position.Y);
+                                                                                isBlockHighlighted=true;
+                                                                                 boardState.blocks[clickedBlockNeighbor.Position.X][clickedBlockNeighbor.Position.Y].Highlight=true;
+                                                                                 break;
+                                                                        }
+                                                                }
+
+                                                        }
+
+                                                        if(isBlockHighlighted) break;
+                                                }       
+                                                if(isBlockHighlighted) break;    
                                         }
+                                        if(isBlockHighlighted) break;
+                                }
+                        }
+
+                        
+                        if(!isBlockHighlighted){
+                                console.log("Tutorial Matching marked state -- start");
+                                //Find marked state
+                                for (let xIndex in boardState.blocks) {
+                                        for (let yIndex in boardState.blocks[xIndex]) {
+                                                if(!(boardState.blocks[xIndex][yIndex].IsClicked && boardState.blocks[xIndex][yIndex].Value>0)) continue; 
+
+                                                let blockInfo= this.calculateBlockInfo(parseInt(xIndex), parseInt (yIndex),true);
+
+                                                let markedValue=0;
+
+                                                for(let block of blockInfo.surroundingBlocks){
+                                                        let neighborBlock=boardState.blocks[block.Position.X][block.Position.Y];
+                                                        if(neighborBlock.MarkedState>0)
+                                                         {
+                                                                 markedValue+=neighborBlock.MarkedState;
+                                                         }
+                                                }
+                                                if(blockInfo.value== markedValue)
+                                                {
+                                                        for(let block of blockInfo.surroundingBlocks)   {
+                                                                let neighborBlock=boardState.blocks[block.Position.X][block.Position.Y];
+                                                                if(!neighborBlock.IsClicked && neighborBlock.MarkedState==0)
+                                                                {
+                                                                        console.log("Tutorial Matching marked state  --  Highlight -- Left: "+ block.Position.X+" top:"+block.Position.Y);
+                                                                        isBlockHighlighted=true;
+                                                                        neighborBlock.Highlight=true;
+                                                                         break; 
+                                                                }
+                                                        }                                                      
+                                                }
+                                                if(isBlockHighlighted) break;    
+                                        }
+                                        if(isBlockHighlighted) break;    
                                 }
                         }
 
@@ -303,14 +385,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                
         }
 
-        pushBlock(blocks: BlockPointer[], left: number, top: number) {
-                if (!this.state.blocks[left][top].IsClicked) {
+        pushBlock(blocks: BlockPointer[], left: number, top: number, getAllBlocks:boolean) {
+                if (!this.state.blocks[left][top].IsClicked || getAllBlocks) {
                         blocks.push({ Position: { X: left, Y: top }, Value: this.mines[left][top] });
                 }
         }
 
         setBlockValues(left: number, top: number, blocksStates: BlockType[][]) {
-                let { value, surroundingBlocks }= this.calculateBlockInfo(left, top);
+                let { value, surroundingBlocks }= this.calculateBlockInfo(left, top,false);
 
                 blocksStates[left][top].IsClicked = true;
                 blocksStates[left][top].Value = value;
@@ -329,31 +411,31 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 }
         }
 
-        private calculateBlockInfo(left: number, top: number) {
+        private calculateBlockInfo(left: number, top: number, getAllBlocks:boolean) {
                 let surroundingBlocks: BlockPointer[] = new Array();
                 if (left > 0) {
-                        this.pushBlock(surroundingBlocks, left - 1, top);
+                        this.pushBlock(surroundingBlocks, left - 1, top,getAllBlocks);
                         if (top > 0) {
-                                this.pushBlock(surroundingBlocks, left - 1, top - 1);
+                                this.pushBlock(surroundingBlocks, left - 1, top - 1,getAllBlocks);
                         }
                         if (top < this.props.levelHeight - 1) {
-                                this.pushBlock(surroundingBlocks, left - 1, top + 1);
+                                this.pushBlock(surroundingBlocks, left - 1, top + 1,getAllBlocks);
                         }
                 }
                 if (left < this.props.levelWidth - 1) {
-                        this.pushBlock(surroundingBlocks, left + 1, top);
+                        this.pushBlock(surroundingBlocks, left + 1, top,getAllBlocks);
                         if (top > 0) {
-                                this.pushBlock(surroundingBlocks, left + 1, top - 1);
+                                this.pushBlock(surroundingBlocks, left + 1, top - 1,getAllBlocks);
                         }
                         if (top < this.props.levelHeight - 1) {
-                                this.pushBlock(surroundingBlocks, left + 1, top + 1);
+                                this.pushBlock(surroundingBlocks, left + 1, top + 1,getAllBlocks);
                         }
                 }
                 if (top > 0) {
-                        this.pushBlock(surroundingBlocks, left, top - 1);
+                        this.pushBlock(surroundingBlocks, left, top - 1,getAllBlocks);
                 }
                 if (top < this.props.levelHeight - 1) {
-                        this.pushBlock(surroundingBlocks, left, top + 1);
+                        this.pushBlock(surroundingBlocks, left, top + 1,getAllBlocks);
                 }
                 let value: number = 0;
                 for (let block of surroundingBlocks) {
