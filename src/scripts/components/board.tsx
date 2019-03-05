@@ -64,14 +64,21 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
 
                 if (this.props.isTutorial) {
-                        this.tutorialText = "Tap the highlighted button";
+                        this.saveLog("User started tutorial");
+                        this.tutorialText = "Tap the highlighted button.";
                         console.log(this.mines);
                 }
         }
 
         startupAnimationCompleted() {
                 if (this.props.isTutorial) {
-                        console.log("Startup animation -- completed");
+                        this.startTutorial();
+                }
+        }
+
+        startTutorial(){
+                console.log("Startup animation -- completed");
+                         this.tutorialText='';
                         let boardState = this.state;
                         let isBlockHighlighted = false;
                         for (let xIndex in boardState.blocks) {
@@ -87,6 +94,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                         console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
                                                         boardState.blocks[xIndex][yIndex].HighlightTap = true;
                                                         isBlockHighlighted = true;
+                                                        this.tutorialText = "Tap the highlighted button";
                                                         break;
                                                 }
                                         }
@@ -94,7 +102,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (isBlockHighlighted) break;
                         }
                         this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
-                }
         }
 
         showTutorialNextStep() {
@@ -123,7 +130,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                 isBlockHighlighted = true;
 
                                                 if (targetMineValue > 0) {
-                                                        this.tutorialText = 'Hold the highlighted block until you feel the vibration ' + targetMineValue + ' times.';
+                                                        this.tutorialText = 'Hold the highlighted block until you feel the vibration ' + targetMineValue + ' time(s)';
                                                         this.isHighlightMineShown = true;
                                                         boardState.blocks[targetMine.Position.X][targetMine.Position.Y].HighlightMine = true;
                                                 } else {
@@ -202,14 +209,6 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                                         this.tutorialText = "Tap the highlighted block.";
                                                                                         boardState.blocks[clickedBlockNeighbor.Position.X][clickedBlockNeighbor.Position.Y].HighlightTap = true;
                                                                                 }
-
-                                                                                // if(targetMineValue>0){
-                                                                                //         for(let i =0; i<targetMineValue;i++){
-                                                                                //          this.handleRightClick(clickedBlockNeighbor.Position.X,clickedBlockNeighbor.Position.Y);
-                                                                                //         }
-                                                                                // }else{
-                                                                                //         this.handleBlockClick(clickedBlockNeighbor.Position.X,clickedBlockNeighbor.Position.Y);
-                                                                                // }
 
                                                                                 break;
                                                                         }
@@ -482,6 +481,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (this.isVibrationEnabled) {
                         Vibration.vibrate(100, false);
                 }
+
+                if(this.props.isTutorial && !this.isHighlightMineShown){
+                        return;
+                }
+
                 if (!this.isMineClicked) {
                         let blocksStates = this.state.blocks;
                         if (blocksStates[left][top].MarkedState === MineType.Large) {
@@ -753,8 +757,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         onAlertOkClick() {
                 var blocks = this.loadLevel();
+               
                 let newState = Object.assign(this.state, { blocks: blocks, alertState: { showAlert: false } });
-                this.setState(newState);
+                this.setState(newState,()=>{
+                        console.log("Alert ok isTutorial: "+this.props.isTutorial );
+                        if(this.props.isTutorial){
+                                this.startTutorial();
+                        }
+                });
         }
 
         onAlertClose() {
