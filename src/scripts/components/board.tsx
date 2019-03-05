@@ -39,6 +39,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         private puzzleDuration: number;
 
+        private tutorialText:string;
+
         constructor(props: any) {
                 super(props);
                 this.startTime = new Date();
@@ -61,25 +63,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
 
                 if (this.props.isTutorial) {
-                       // this.startTutorial()
+                       this.tutorialText="Tap the highlighted block";
                 }
-        }
-
-        startTutorial() {
-                let blocksState = this.state.blocks
-                for (let row of blocksState) {
-                        for (let block of row) {
-                                // if (!block.IsClicked) {
-                                //         this.setBlockValues(block.Left, block.Top, boardState);
-                                // }
-                                if(block.HasMine) {
-                                        block.MarkedState= block.Mine
-                                }                               
-                                // console.log("Tutorial: block left:" + block.Left+", block top:" + block.Top+", has mine:"+ block.HasMine+", block value: "+ blockInfo.value );
-                        }
-                }
-
-                this.setState(Object.assign(this.state, { blocks:blocksState}));
         }
 
         startupAnimationCompleted() {
@@ -820,21 +805,33 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         bottom: 0,
                         right: 0,
                         width: undefined,
-                        height: undefined
+                        height: undefined,
                 }
 
                 let signInImageStyle: StyleProp<ImageStyle> = {
                         width: 150,
                         height: 36
                 }
+
+                let tutorialBanner=null;
+                if(this.props.isTutorial){
+                        console.log("tutorial text -- "+this.tutorialText);
+                tutorialBanner=<View style={{flex:1,backgroundColor:'#CCC', borderRadius:7,margin:5, padding:5, position: 'absolute',alignSelf:'stretch',top:0,left:0, right:0, flexDirection:'row'}}><Text>{this.tutorialText}</Text></View>;
+                }
+
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
-                                <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
+                                <View style={background}>
+                                        <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
+                                </View>
+
                                 <View style={BoardStyles.frame} >
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
                                                 {puzzle}
                                         </Animated.View>
                                 </View>
+
+                                {tutorialBanner}
 
                                 <Alert title={this.state.alertState.alertTitle}
                                         showPopup={this.state.alertState.showAlert}
