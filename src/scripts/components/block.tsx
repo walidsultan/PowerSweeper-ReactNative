@@ -2,7 +2,7 @@ import * as React from 'react';
 import BlockInterface from '../interfaces/BlockInterface';
 import BlockState from '../states/BlockState';
 import { MineType } from '../enums/mineType';
-import { TouchableHighlight, Text, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType } from 'react-native';
+import { TouchableHighlight, Text, TextStyle, StyleProp, Image, ImageStyle, ImageSourcePropType, Animated } from 'react-native';
 import BlockStyles from '../../styles/blockStyles';
 
 export default class Block extends React.Component<BlockInterface, BlockState> {
@@ -43,10 +43,24 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
 
     let blockContent;
-    if (this.props.MarkedState > 0) {
-      blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
-    } else {
-      blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
+    if (this.props.Highlight) {
+      var color = this.state.BlockColor.interpolate({
+        inputRange: [0, 300],
+         outputRange: ['rgba(100, 100, 100, 1)', 'rgba(200, 200, 200, 1)']
+      });
+
+      let animationSequence = Animated.sequence([Animated.timing(this.state.BlockColor, { toValue: 300, duration: 1000 }),
+      Animated.timing(this.state.BlockColor, { toValue: 0, duration: 1000 })]);
+      Animated.loop(animationSequence).start();
+
+      blockContent = <Animated.View style={{ backgroundColor: color, flex: 1, borderRadius:5}}></Animated.View>
+    }
+    else {
+      if (this.props.MarkedState > 0) {
+        blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
+      } else {
+        blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
+      }
     }
 
     return (

@@ -14,7 +14,8 @@ const BlockStyles = StyleSheet.create({
       shadowRadius: 4.65,
       elevation: 7,
       justifyContent:'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      flex:1
    },
    clicked:{
     backgroundColor: '#EBEBEB',
@@ -43,7 +44,7 @@ const BlockStyles = StyleSheet.create({
       backgroundColor: '#ddd'
    },
    highlight:{
-      backgroundColor:'#00FF00'
+      alignItems:'stretch'
    }
    
 });
