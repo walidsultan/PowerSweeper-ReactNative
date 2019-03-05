@@ -43,10 +43,10 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
 
     let blockContent;
-    if (this.props.Highlight) {
+    if (this.props.HighlightMine || this.props.HighlightTap) {
       var color = this.state.BlockColor.interpolate({
         inputRange: [0, 300],
-         outputRange: ['rgba(100, 100, 100, 1)', 'rgba(200, 200, 200, 1)']
+         outputRange: this.props.HighlightTap? ['rgba(100, 100, 100, 1)', 'rgba(200, 200, 200, 1)']: ['rgba(150, 0, 0, 1)', 'rgba(255, 0, 0, 1)']
       });
 
       let animationSequence = Animated.sequence([Animated.timing(this.state.BlockColor, { toValue: 300, duration: 1000 }),
@@ -127,7 +127,7 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
       console.log("Get Block styles");
     }
 
-    if (this.props.Highlight) {
+    if (this.props.HighlightTap|| this.props.HighlightMine) {
       console.log("Get Block styles -- Highlight");
       styles.push(BlockStyles.highlight);
     }

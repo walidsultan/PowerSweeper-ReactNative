@@ -13,5 +13,6 @@ export default interface BlockInterface {
     IsClicked:boolean;
     MarkedState:MineType;
     IsTutorial:boolean;
-    Highlight:boolean;
+    HighlightTap:boolean;
+    HighlightMine:boolean;
 }

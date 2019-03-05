@@ -14,5 +14,6 @@ export default class BlockType implements BlockInterface {
     IsClicked: boolean;
     MarkedState: MineType = 0;
     IsTutorial:boolean =false;
-    Highlight:boolean;
+    HighlightTap:boolean;
+    HighlightMine:boolean;
 }
