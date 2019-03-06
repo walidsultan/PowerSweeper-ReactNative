@@ -805,6 +805,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 "PhotoUrl": photoUrl,
                                 "isSignedIn": this.isSignedIn
                         })
+                }).catch((error) => {
+                        console.error(error);
                 });
         }
 

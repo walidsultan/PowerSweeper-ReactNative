@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.13",
+    "version": "1.0.14",
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "splash": {
@@ -36,7 +36,7 @@
       },
       "package": "com.ws.minerage",
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE","VIBRATE"],
-      "versionCode":13
+      "versionCode":14
     }
   }
 }
