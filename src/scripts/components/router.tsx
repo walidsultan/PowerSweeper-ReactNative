@@ -20,11 +20,11 @@ export default class Router extends React.Component<RouterInterface, RouterState
         this.playBackGroundMusic();
 
            AsyncStorage.getItem('isAssistEnabled',(error,result)=>{
-            if(result==='true'){
-                this.setState({ isAssistEnabled: true });
+            if(result==='false'){
+                this.setState({ isAssistEnabled: false });
             }else
             {
-                this.setState({ isAssistEnabled: false });
+                this.setState({ isAssistEnabled: true });
             }
             if(error){
                 console.log(error);
