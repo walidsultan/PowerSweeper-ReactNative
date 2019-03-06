@@ -66,7 +66,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 if (this.props.isTutorial) {
                         this.saveLog("User started tutorial");
                         this.tutorialText = "Tap the highlighted button.";
-                        console.log(this.mines);
+                        //console.log(this.mines);
                 }
         }
 
@@ -91,7 +91,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         if (isVisible) {
                                                 let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), false);
                                                 if (blockInfo.value == 0) {
-                                                        console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
+                                                      //  console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
                                                         boardState.blocks[xIndex][yIndex].HighlightTap = true;
                                                         isBlockHighlighted = true;
                                                         this.tutorialText = "Tap the highlighted button";
@@ -146,14 +146,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 }
 
                 if (!isBlockHighlighted) {
-                        console.log("Tutorial Matching Blocks -- start");
+                       // console.log("Tutorial Matching Blocks -- start");
                         //Find common blocks
                         for (let xIndex in boardState.blocks) {
                                 for (let yIndex in boardState.blocks[xIndex]) {
                                         if (!(boardState.blocks[xIndex][yIndex].IsClicked && boardState.blocks[xIndex][yIndex].Value > 0)) continue;
 
                                         let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), true);
-                                        console.log("Tutorial Matching Blocks -- main block -- left:" + xIndex + " top: " + yIndex + " value: " + boardState.blocks[xIndex][yIndex].Value);
+                                       // console.log("Tutorial Matching Blocks -- main block -- left:" + xIndex + " top: " + yIndex + " value: " + boardState.blocks[xIndex][yIndex].Value);
                                         let surroundingNonClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == false &&
                                                 boardState.blocks[x.Position.X][x.Position.Y].MarkedState == 0);
 
@@ -181,11 +181,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                         }
                                                 }
                                                 if (hasCommonBlocks) {
-                                                        console.log("Tutorial Matching, found common blocks for clicked block Left: " + clickedBlock.Position.X + " Top: " + clickedBlock.Position.Y + " Value: " + clickedBlockInfo.value);
+                                                       // console.log("Tutorial Matching, found common blocks for clicked block Left: " + clickedBlock.Position.X + " Top: " + clickedBlock.Position.Y + " Value: " + clickedBlockInfo.value);
                                                         //any non matching block should be zero
                                                         let clickedBlockNeighbors = clickedBlockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == false &&
                                                                 boardState.blocks[x.Position.X][x.Position.Y].MarkedState == 0);
-                                                        console.log("clickedBlockNeighbors count -- " + clickedBlockNeighbors.length);
+                                                      //  console.log("clickedBlockNeighbors count -- " + clickedBlockNeighbors.length);
                                                         if (clickedBlockInfo.value == blockInfo.value || (clickedBlockNeighbors.length - surroundingNonClickedBlocks.length == 1)) {
                                                                 console.log("common blocks condition met");
 
@@ -198,7 +198,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                 for (let clickedBlockNeighbor of clickedBlockNeighbors) {
                                                                         let isNotMatching = surroundingNonClickedBlocks.filter(x => x.Position.X == clickedBlockNeighbor.Position.X && x.Position.Y == clickedBlockNeighbor.Position.Y).length == 0;
                                                                         if (isNotMatching) {
-                                                                                console.log("Tutorial Matching Blocks --  Highlight -- Left: " + clickedBlockNeighbor.Position.X + " top:" + clickedBlockNeighbor.Position.Y + " target mine value: " + targetMineValue);
+                                                                               // console.log("Tutorial Matching Blocks --  Highlight -- Left: " + clickedBlockNeighbor.Position.X + " top:" + clickedBlockNeighbor.Position.Y + " target mine value: " + targetMineValue);
                                                                                 isBlockHighlighted = true;
 
                                                                                 if (targetMineValue > 0) {
@@ -863,7 +863,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 let tutorialBanner = null;
                 if (this.props.isTutorial) {
-                        console.log("tutorial text -- " + this.tutorialText);
+                       // console.log("tutorial text -- " + this.tutorialText);
                         tutorialBanner = <View style={{ flex: 1, backgroundColor: '#CCC', borderRadius: 7, margin: 5, padding: 5, position: 'absolute', alignSelf: 'stretch', top: 0, left: 0, right: 0, flexDirection: 'row' }}><Text>{this.tutorialText}</Text></View>;
                 }
 

@@ -116,6 +116,8 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
                 onMediumLevelClick={() => this.props.onNewLevel(Difficulty.Medium)}
                 onHardLevelClick={() => this.props.onNewLevel(Difficulty.Hard)}
+                onAssistChange={this.props.onAssistChange}
+                isAssistEnabled={this.props.isAssistEnabled}
                 title='Difficulty'
             ></LevelDifficulty>
             <MenuContent
@@ -194,7 +196,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                         <Switch value={this.state.isVibrationEnabled} onValueChange={this.onVibrationToggle} style={MenuStyles.settingsSwitch}></Switch>
                     </View>
 
-                     <View style={MenuStyles.privacyPolicy}>
+                    <View style={MenuStyles.privacyPolicy}>
                         <Text style={MenuStyles.privacyPolicyText} onPress={() => Linking.openURL('http://walidsultan.net/games/powersweeperreact/privacy_policy.html')}>Privacy Policy</Text>
                     </View>
                 </View>
@@ -378,7 +380,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 AsyncStorage.multiSet([['name', result.user.name],
                 ['photoUrl', result.user.photoUrl]]);
                 this.setState({ isSignedIn: true });
-                this.saveLog("User: " + result.user.name +" logged in successfully.")
+                this.saveLog("User: " + result.user.name + " logged in successfully.")
             } else {
                 this.saveLog("error: " + result.type)
             }

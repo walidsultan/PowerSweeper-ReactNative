@@ -123,12 +123,8 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
       styles.push(BlockStyles.marked);
     }
 
-    if (this.props.Left == 0 && this.props.Top == 0) {
-      console.log("Get Block styles");
-    }
-
     if (this.props.HighlightTap|| this.props.HighlightMine) {
-      console.log("Get Block styles -- Highlight");
+   //   console.log("Get Block styles -- Highlight");
       styles.push(BlockStyles.highlight);
     }
 

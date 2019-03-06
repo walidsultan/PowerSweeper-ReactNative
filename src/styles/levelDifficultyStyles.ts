@@ -21,6 +21,16 @@ const LevelDifficultyStyles = StyleSheet.create({
         fontFamily: 'funkyFont',
         fontWeight: '400',
         fontSize: 45
+    },
+    levelAssist:{
+        alignSelf:'flex-start',
+        flexDirection:'row',
+        alignItems:'center'
+    },
+    assistSwitch:{
+    },
+    assistText:{
+        //alignSelf:'center'
     }
 });
 

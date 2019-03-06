@@ -2,7 +2,7 @@
 import * as React from 'react';
 import LevelDifficultyInterface from '../interfaces/LevelDiffiCultyInterface';
 import Popup from './popup';
-import { View, TouchableHighlight, Text, Animated } from 'react-native';
+import { View, TouchableHighlight, Text, Animated, Switch } from 'react-native';
 import LevelDifficultyStyles from '../../styles/levelDifficultyStyles';
 import LevelDifficultyState from '../states/LevelDifficultyState';
 
@@ -11,6 +11,8 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
     constructor(props: any) {
         super(props);
         this.state = new LevelDifficultyState();
+
+     
     }
     render() {
 
@@ -45,10 +47,16 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
                             <Text style={LevelDifficultyStyles.buttonText}>Hard</Text>
                         </TouchableHighlight>
                     </Animated.View>
+                    <View style={LevelDifficultyStyles.levelAssist}>
+                        <Text style={LevelDifficultyStyles.assistText}>Assist</Text>
+                        <Switch value={this.props.isAssistEnabled} onValueChange={this.props.onAssistChange} style={LevelDifficultyStyles.assistSwitch}></Switch>
+                    </View>
                 </View>
             </Popup>
         );
     }
+
+ 
 
     buttonPress(animatedValue: Animated.Value, callback: any) {
         Animated.timing(animatedValue, { toValue: 0.1, duration: 500 }).start(() => {

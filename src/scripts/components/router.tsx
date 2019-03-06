@@ -18,6 +18,18 @@ export default class Router extends React.Component<RouterInterface, RouterState
         this.state = new RouterState();
 
         this.playBackGroundMusic();
+
+           AsyncStorage.getItem('isAssistEnabled',(error,result)=>{
+            if(result==='true'){
+                this.setState({ isAssistEnabled: true });
+            }else
+            {
+                this.setState({ isAssistEnabled: false });
+            }
+            if(error){
+                console.log(error);
+            }
+        })
     }
 
     async playBackGroundMusic() {
@@ -50,13 +62,13 @@ export default class Router extends React.Component<RouterInterface, RouterState
     getCurrentView() {
         switch (this.state.pageView) {
             case PageView.Menu:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()} onAssistChange={this.onAssistToggle} isAssistEnabled={this.state.isAssistEnabled} ></Menu>;
             case PageView.Puzzle:
-                return this.getPuzzleByDifficulty(false);
+                return this.getPuzzleByDifficulty(this.state.isAssistEnabled);
             case PageView.Tutorial:
                 return this.getPuzzleByDifficulty(true);
             default:
-                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()}></Menu>;
+                return <Menu onNewLevel={(e) => this.onNewLevel(e)} musicReference={soundObject} onTutorial={() => this.onTutorial()} onAssistChange={this.onAssistToggle}  isAssistEnabled={this.state.isAssistEnabled}></Menu>;
         }
     }
 
@@ -68,6 +80,13 @@ export default class Router extends React.Component<RouterInterface, RouterState
     onNewLevel(difficulty: Difficulty) {
         this.setLevelDifficulty(difficulty);
         this.setView(PageView.Puzzle);
+    }
+
+    onAssistToggle = (value: any)=> {
+        console.log("Router assist toggle -- " + value );
+        let newState = Object.assign(this.state, { isAssistEnabled: value });
+        this.setState(newState);
+        AsyncStorage.setItem('isAssistEnabled', value.toString());
     }
 
     getPuzzleByDifficulty(isTutorial: boolean) {

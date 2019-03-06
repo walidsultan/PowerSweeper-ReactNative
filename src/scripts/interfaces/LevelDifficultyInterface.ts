@@ -4,4 +4,6 @@ export default interface LevelDifficultyInterface  extends PopupInterface{
     onEasyLevelClick:any;
     onMediumLevelClick:any;
     onHardLevelClick:any;
+    onAssistChange:any;
+    isAssistEnabled:boolean;
 }
