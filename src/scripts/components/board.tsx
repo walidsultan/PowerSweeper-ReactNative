@@ -482,7 +482,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         Vibration.vibrate(100, false);
                 }
 
-                if(this.props.isTutorial && !this.isHighlightMineShown){
+                if(this.props.isTutorial && !this.state.blocks[left][top].HighlightMine){
                         return;
                 }
 
