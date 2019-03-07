@@ -39,7 +39,7 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
                     </Animated.View>
                     <Animated.View style={[LevelDifficultyStyles.button, mediumButtonStyle]}>
                         <TouchableHighlight onPress={() => this.buttonPress(this.state.MediumButtonOpacity, this.props.onMediumLevelClick)} style={LevelDifficultyStyles.buttonHighlight} underlayColor='#eee'>
-                            <Text style={LevelDifficultyStyles.buttonText}>Meduim</Text>
+                            <Text style={LevelDifficultyStyles.buttonText}>Medium</Text>
                         </TouchableHighlight>
                     </Animated.View>
                     <Animated.View style={[LevelDifficultyStyles.button, hardButtonStyle]}>
