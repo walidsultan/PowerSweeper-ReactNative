@@ -761,7 +761,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         onAlertOkClick() {
                 var blocks = this.loadLevel();
-               
+                this.isHighlightMineShown=false;
+
                 let newState = Object.assign(this.state, { blocks: blocks, alertState: { showAlert: false } });
                 this.setState(newState,()=>{
                         console.log("Alert ok isTutorial: "+this.props.isTutorial );
