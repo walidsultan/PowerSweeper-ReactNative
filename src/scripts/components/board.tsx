@@ -41,6 +41,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         private tutorialText: string;
         private isHighlightMineShown: boolean = false;
+        private lastMineLeft: number = -1;
+        private lastMineTop: number = -1;
 
         constructor(props: any) {
                 super(props);
@@ -76,32 +78,32 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 }
         }
 
-        startTutorial(){
-                console.log("Startup animation -- completed");
-                         this.tutorialText='';
-                        let boardState = this.state;
-                        let isBlockHighlighted = false;
-                        for (let xIndex in boardState.blocks) {
-                                for (let yIndex in boardState.blocks[xIndex]) {
+        startTutorial() {
+                //console.log("Startup animation -- completed");
+                this.tutorialText = '';
+                let boardState = this.state;
+                let isBlockHighlighted = false;
+                for (let xIndex in boardState.blocks) {
+                        for (let yIndex in boardState.blocks[xIndex]) {
 
-                                        if (boardState.blocks[xIndex][yIndex].HasMine) continue;
+                                if (boardState.blocks[xIndex][yIndex].HasMine) continue;
 
-                                        let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
-                                                ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
-                                        if (isVisible) {
-                                                let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), false);
-                                                if (blockInfo.value == 0) {
-                                                      //  console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
-                                                        boardState.blocks[xIndex][yIndex].HighlightTap = true;
-                                                        isBlockHighlighted = true;
-                                                        this.tutorialText = "Tap the highlighted button";
-                                                        break;
-                                                }
+                                let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
+                                        ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
+                                if (isVisible) {
+                                        let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), false);
+                                        if (blockInfo.value == 0) {
+                                                //  console.log("Highlight block -- Left: " + boardState.blocks[xIndex][yIndex].Left + " Top: " + boardState.blocks[xIndex][yIndex].Top);
+                                                boardState.blocks[xIndex][yIndex].HighlightTap = true;
+                                                isBlockHighlighted = true;
+                                                this.tutorialText = "Tap the highlighted button";
+                                                break;
                                         }
                                 }
-                                if (isBlockHighlighted) break;
                         }
-                        this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
+                        if (isBlockHighlighted) break;
+                }
+                this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
         }
 
         showTutorialNextStep() {
@@ -114,7 +116,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (!boardState.blocks[xIndex][yIndex].IsClicked || boardState.blocks[xIndex][yIndex].HasMine) continue;
 
                                 if (boardState.blocks[xIndex][yIndex].Value > 0) {
-                                        console.log("Mines step: left:" + xIndex + ", top: " + yIndex);
+                                        //console.log("Mines step: left:" + xIndex + ", top: " + yIndex);
                                         let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), false);
                                         let surroundingNonClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == false &&
                                                 boardState.blocks[x.Position.X][x.Position.Y].MarkedState == 0);
@@ -126,7 +128,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                         markedMinesValue = surroundingMarkedMines.map(x => boardState.blocks[x.Position.X][x.Position.Y].Mine).reduce((x, y) => x + y);
                                                 }
                                                 let targetMineValue = blockInfo.value - markedMinesValue;
-                                                 console.log("Mines step: mark mine, left: " + targetMine.Position.X + " top: " + targetMine.Position.Y + " mine value: " + targetMineValue);
+                                                //console.log("Mines step: mark mine, left: " + targetMine.Position.X + " top: " + targetMine.Position.Y + " mine value: " + targetMineValue);
                                                 isBlockHighlighted = true;
 
                                                 if (targetMineValue > 0) {
@@ -146,20 +148,20 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 }
 
                 if (!isBlockHighlighted) {
-                        console.log("Tutorial Matching Blocks -- start");
+                        //console.log("Tutorial Matching Blocks -- start");
                         //Find common blocks
                         for (let xIndex in boardState.blocks) {
                                 for (let yIndex in boardState.blocks[xIndex]) {
                                         if (!(boardState.blocks[xIndex][yIndex].IsClicked && boardState.blocks[xIndex][yIndex].Value > 0)) continue;
 
                                         let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), true);
-                                        console.log("Tutorial Matching Blocks -- main block -- left:" + xIndex + " top: " + yIndex + " value: " + boardState.blocks[xIndex][yIndex].Value);
+                                        //console.log("Tutorial Matching Blocks -- main block -- left:" + xIndex + " top: " + yIndex + " value: " + boardState.blocks[xIndex][yIndex].Value);
                                         let surroundingNonClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == false &&
                                                 boardState.blocks[x.Position.X][x.Position.Y].MarkedState == 0);
 
                                         if (surroundingNonClickedBlocks.length == 0) continue;
 
-                                        console.log("Tutorial Matching surroundingNonClickedBlocks count -- " + surroundingNonClickedBlocks.length);
+                                        //console.log("Tutorial Matching surroundingNonClickedBlocks count -- " + surroundingNonClickedBlocks.length);
                                         //Surrounding clicked blocks of the same value
                                         let surroundingClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == true && boardState.blocks[x.Position.X][x.Position.Y].Value > 0);
 
@@ -169,7 +171,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                 mainMarkedValue = mainMarkedBlocks.map(x => boardState.blocks[x.Position.X][x.Position.Y].MarkedState).reduce((x, y) => x + y);
                                         }
 
-                                        console.log("Tutorial Matching surroundingClickedBlocks count -- " + surroundingClickedBlocks.length);
+                                        //console.log("Tutorial Matching surroundingClickedBlocks count -- " + surroundingClickedBlocks.length);
                                         for (let clickedBlock of surroundingClickedBlocks) {
                                                 let clickedBlockInfo = this.calculateBlockInfo(clickedBlock.Position.X, clickedBlock.Position.Y, true);
                                                 let hasCommonBlocks = true;
@@ -181,13 +183,13 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                         }
                                                 }
                                                 if (hasCommonBlocks) {
-                                                        console.log("Tutorial Matching, found common blocks for clicked block Left: " + clickedBlock.Position.X + " Top: " + clickedBlock.Position.Y + " Value: " + clickedBlockInfo.value);
+                                                        //console.log("Tutorial Matching, found common blocks for clicked block Left: " + clickedBlock.Position.X + " Top: " + clickedBlock.Position.Y + " Value: " + clickedBlockInfo.value);
                                                         //any non matching block should be zero
                                                         let clickedBlockNeighbors = clickedBlockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == false &&
                                                                 boardState.blocks[x.Position.X][x.Position.Y].MarkedState == 0);
-                                                        console.log("clickedBlockNeighbors count -- " + clickedBlockNeighbors.length);
+                                                        //console.log("clickedBlockNeighbors count -- " + clickedBlockNeighbors.length);
                                                         if (clickedBlockInfo.value == blockInfo.value || (clickedBlockNeighbors.length - surroundingNonClickedBlocks.length == 1)) {
-                                                                console.log("common blocks condition met");
+                                                                //console.log("common blocks condition met");
 
                                                                 let clickedMarkedBlocks = clickedBlockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].MarkedState > 0);
                                                                 let clickedMarkedValue = 0;
@@ -195,12 +197,12 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                         clickedMarkedValue = clickedMarkedBlocks.map(x => boardState.blocks[x.Position.X][x.Position.Y].MarkedState).reduce((x, y) => x + y);
                                                                 }
                                                                 let targetMineValue = clickedBlockInfo.value - blockInfo.value - clickedMarkedValue + mainMarkedValue;
-                                                                if( targetMineValue > 0 && (clickedBlockNeighbors.length - surroundingNonClickedBlocks.length != 1)) continue;
+                                                                if (targetMineValue > 0 && (clickedBlockNeighbors.length - surroundingNonClickedBlocks.length != 1)) continue;
 
                                                                 for (let clickedBlockNeighbor of clickedBlockNeighbors) {
                                                                         let isNotMatching = surroundingNonClickedBlocks.filter(x => x.Position.X == clickedBlockNeighbor.Position.X && x.Position.Y == clickedBlockNeighbor.Position.Y).length == 0;
                                                                         if (isNotMatching) {
-                                                                               console.log("Tutorial Matching Blocks --  Highlight -- Left: " + clickedBlockNeighbor.Position.X + " top:" + clickedBlockNeighbor.Position.Y + " target mine value: " + targetMineValue);
+                                                                                //console.log("Tutorial Matching Blocks --  Highlight -- Left: " + clickedBlockNeighbor.Position.X + " top:" + clickedBlockNeighbor.Position.Y + " target mine value: " + targetMineValue);
                                                                                 isBlockHighlighted = true;
 
                                                                                 if (targetMineValue > 0) {
@@ -333,7 +335,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.AddMines(this.props.mediumMinesCount, MineType.Medium);
                 this.AddMines(this.props.bigMinesCount, MineType.Large);
 
-                console.log(this.mines);
+                //console.log(this.mines);
 
                 return this.initializeValues();
         }
@@ -413,7 +415,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 } else {
                         this.isAnyBlockClicked = true;
                         boardState.blocks[left][top].MarkedState = 0;
-                        console.log("block clicked: left: " + left + ", top: " + top)
+                        //console.log("block clicked: left: " + left + ", top: " + top)
                         this.setBlockValues(left, top, boardState.blocks);
                 }
                 this.setState({ blocks: boardState.blocks }, () => this.onMineStateChanged());
@@ -486,7 +488,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         Vibration.vibrate(100, false);
                 }
 
-                if(this.props.isTutorial && !this.state.blocks[left][top].HighlightMine){
+                if (this.props.isTutorial && this.lastMineLeft==left && this.lastMineTop==top) {
                         return;
                 }
 
@@ -501,6 +503,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         if (this.props.isTutorial && blocksStates[left][top].MarkedState == blocksStates[left][top].Mine) {
                                 blocksStates[left][top].HighlightMine = false;
                                 this.isHighlightMineShown = false;
+                                this.lastMineLeft=left;
+                                this.lastMineTop=top;
                                 this.showTutorialNextStep();
                         }
 
@@ -761,12 +765,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         onAlertOkClick() {
                 var blocks = this.loadLevel();
-                this.isHighlightMineShown=false;
+                this.isHighlightMineShown = false;
+                this.lastMineLeft=-1;
+                this.lastMineTop=-1;
 
                 let newState = Object.assign(this.state, { blocks: blocks, alertState: { showAlert: false } });
-                this.setState(newState,()=>{
-                        console.log("Alert ok isTutorial: "+this.props.isTutorial );
-                        if(this.props.isTutorial){
+                this.setState(newState, () => {
+                        //console.log("Alert ok isTutorial: " + this.props.isTutorial);
+                        if (this.props.isTutorial) {
                                 this.startTutorial();
                         }
                 });
@@ -868,7 +874,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 let tutorialBanner = null;
                 if (this.props.isTutorial) {
-                       // console.log("tutorial text -- " + this.tutorialText);
+                        // console.log("tutorial text -- " + this.tutorialText);
                         tutorialBanner = <View style={{ flex: 1, backgroundColor: '#CCC', borderRadius: 7, margin: 5, padding: 5, position: 'absolute', alignSelf: 'stretch', top: 0, left: 0, right: 0, flexDirection: 'row' }}><Text>{this.tutorialText}</Text></View>;
                 }
 
