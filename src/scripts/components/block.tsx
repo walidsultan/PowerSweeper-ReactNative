@@ -53,11 +53,13 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
       Animated.timing(this.state.BlockColor, { toValue: 0, duration: 1000 })]);
       Animated.loop(animationSequence).start();
 
-      blockContent = <Animated.View style={{ backgroundColor: color, flex: 1, borderRadius:5}}></Animated.View>
+      blockContent = <Animated.View style={{ backgroundColor: color, flex: 1, borderRadius:5}}>
+                        {this.getMineElement(imageStyle)}
+                    </Animated.View>;
     }
     else {
       if (this.props.MarkedState > 0) {
-        blockContent = <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle} ></Image>;
+        blockContent = this.getMineElement(imageStyle);
       } else {
         blockContent = <Text> {(this.props.IsClicked && this.props.Value > 0 && <Text>{this.props.Value}</Text>)}</Text>
       }
@@ -68,6 +70,10 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
         {blockContent}
       </TouchableHighlight>
     );
+  }
+
+  private getMineElement(imageStyle: ImageStyle): any {
+    return <Image source={this.getMineImagePath(this.props.MarkedState)} style={imageStyle}></Image>;
   }
 
   onTouchStart() {
