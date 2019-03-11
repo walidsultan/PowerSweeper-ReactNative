@@ -319,8 +319,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 return ((blockLeft >= 0) &&
                         (blockTop >= 0) &&
-                        ((blockLeft + this.blockSizeValue) < screenWidth) &&
-                        ((blockTop + this.blockSizeValue) < screenHeight));
+                        ((blockLeft + this.blockSizeValue) <= screenWidth) &&
+                        ((blockTop + this.blockSizeValue) <= screenHeight));
         }
 
         loadSettings() {
