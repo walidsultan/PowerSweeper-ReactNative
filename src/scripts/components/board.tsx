@@ -88,8 +88,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                                 if (boardState.blocks[xIndex][yIndex].HasMine) continue;
 
-                                let isVisible = (((this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue) > 0) &&
-                                        ((this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue) > 0));
+                                let isVisible = this.isBlockVisible(xIndex, yIndex);
                                 if (isVisible) {
                                         let blockInfo = this.calculateBlockInfo(parseInt(xIndex), parseInt(yIndex), false);
                                         if (blockInfo.value == 0) {
@@ -110,6 +109,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.tutorialText = '';
                 let boardState = this.state;
                 let isBlockHighlighted = false;
+                let highlightedBlockLeft = -1;
+                let highlightedBlockTop = -1;
                 //Find mines
                 for (let xIndex in boardState.blocks) {
                         for (let yIndex in boardState.blocks[xIndex]) {
@@ -130,7 +131,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                 let targetMineValue = blockInfo.value - markedMinesValue;
                                                 //console.log("Mines step: mark mine, left: " + targetMine.Position.X + " top: " + targetMine.Position.Y + " mine value: " + targetMineValue);
                                                 isBlockHighlighted = true;
-
+                                                highlightedBlockLeft = targetMine.Position.X;
+                                                highlightedBlockTop = targetMine.Position.Y;
                                                 if (targetMineValue > 0) {
                                                         this.tutorialText = 'Hold the highlighted block until you feel the vibration ' + targetMineValue + ' time(s)';
                                                         this.isHighlightMineShown = true;
@@ -204,7 +206,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                                         if (isNotMatching) {
                                                                                 //console.log("Tutorial Matching Blocks --  Highlight -- Left: " + clickedBlockNeighbor.Position.X + " top:" + clickedBlockNeighbor.Position.Y + " target mine value: " + targetMineValue);
                                                                                 isBlockHighlighted = true;
-
+                                                                                highlightedBlockLeft = clickedBlockNeighbor.Position.X;
+                                                                                highlightedBlockTop = clickedBlockNeighbor.Position.Y;
                                                                                 if (targetMineValue > 0) {
                                                                                         this.tutorialText = 'Hold the highlighted block until you feel the vibration ' + targetMineValue + ' times.';
                                                                                         this.isHighlightMineShown = true;
@@ -255,6 +258,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                         if (!neighborBlock.IsClicked && neighborBlock.MarkedState == 0) {
                                                                 //  console.log("Tutorial Matching marked state  --  Highlight -- Left: " + block.Position.X + " top:" + block.Position.Y);
                                                                 isBlockHighlighted = true;
+                                                                highlightedBlockLeft = block.Position.X;
+                                                                highlightedBlockTop = block.Position.Y;
                                                                 neighborBlock.HighlightTap = true;
 
                                                                 this.tutorialText = "Tap the highlighted block.";
@@ -271,10 +276,51 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 if (!isBlockHighlighted) {
                         this.tutorialText = "Out of clues. Choose a random block.";
+                } else {
+                        this.dragPuzzletoHighlightedBlock(highlightedBlockLeft, highlightedBlockTop);
                 }
 
                 this.setState(Object.assign(this.state, { blocks: boardState.blocks }));
 
+        }
+
+        dragPuzzletoHighlightedBlock(xIndex: any, yIndex: any) {
+                if (!this.isBlockVisible(xIndex, yIndex)) {
+                        console.log("tutorial auto drag: block not visible -- xIndex: " + xIndex + " yIndex: " + yIndex);
+                        let highlightedBlock = this.state.blocks[xIndex][yIndex];
+                        let screenWidth = Dimensions.get('window').width;
+                        let screenHeight = Dimensions.get('window').height;
+
+                        let targetPuzzleOffset = new BlockPosition();
+                        targetPuzzleOffset.X = (screenWidth / 2 - highlightedBlock.Left * this.blockSizeValue);
+                        targetPuzzleOffset.Y = -this.initialPuzzleTopOffset + (screenHeight / 2 - highlightedBlock.Top * this.blockSizeValue);
+
+                        targetPuzzleOffset = this.applyDisplacementLimitations(targetPuzzleOffset)
+                        // console.log("tutorial auto drag: highlighted block left: " + highlightedBlock.Left + " top: " + highlightedBlock.Top);
+                        //console.log("tutorial auto drag: screenWidth: " + screenWidth + " screenHeight: " + screenHeight);
+
+                        //console.log("tutorial auto drag: block not visible -- targetPuzzlePositionOffsetX: " + targetPuzzleOffset.X + " targetPuzzlePositionOffsetY: " + targetPuzzleOffset.Y);
+                        this.puzzlePositionOffset.X = targetPuzzleOffset.X;
+                        this.puzzlePositionOffset.Y = targetPuzzleOffset.Y;
+
+                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: targetPuzzleOffset.X, y: targetPuzzleOffset.Y }, duration: 1000, delay: 300 }).start();
+                }
+        }
+
+        isBlockVisible(xIndex: any, yIndex: any) {
+                let boardState = this.state;
+                let screenWidth = Dimensions.get('window').width;
+                let screenHeight = Dimensions.get('window').height;
+                let blockLeft = this.puzzlePositionOffset.X + boardState.blocks[xIndex][yIndex].Left * this.blockSizeValue;
+                let blockTop = this.puzzlePositionOffset.Y + boardState.blocks[xIndex][yIndex].Top * this.blockSizeValue;
+                // console.log("isBlockVisible: screenWidth: " + screenWidth + " screenHeight: " + screenHeight);
+
+                // console.log("isBlockVisible -- blockLeft: " + blockLeft + " blockTop: " + blockTop);
+
+                return ((blockLeft >= 0) &&
+                        (blockTop >= 0) &&
+                        ((blockLeft + this.blockSizeValue) < screenWidth) &&
+                        ((blockTop + this.blockSizeValue) < screenHeight));
         }
 
         loadSettings() {
@@ -484,14 +530,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         handleRightClick(left: number, top: number) {
-                if (this.isVibrationEnabled) {
-                        Vibration.vibrate(100, false);
-                }
-
-                if (this.props.isTutorial && this.lastMineLeft==left && this.lastMineTop==top) {
+                if (this.props.isTutorial && this.lastMineLeft == left && this.lastMineTop == top) {
                         return;
                 }
 
+                if (this.isVibrationEnabled) {
+                        Vibration.vibrate(100, false);
+                }
+               
                 if (!this.isMineClicked) {
                         let blocksStates = this.state.blocks;
                         if (blocksStates[left][top].MarkedState === MineType.Large) {
@@ -503,8 +549,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         if (this.props.isTutorial && blocksStates[left][top].MarkedState == blocksStates[left][top].Mine) {
                                 blocksStates[left][top].HighlightMine = false;
                                 this.isHighlightMineShown = false;
-                                this.lastMineLeft=left;
-                                this.lastMineTop=top;
+                                this.lastMineLeft = left;
+                                this.lastMineTop = top;
                                 this.showTutorialNextStep();
                         }
 
@@ -677,13 +723,19 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.puzzlePositionOffset.X += gesture.dx * .2;
                 this.puzzlePositionOffset.Y += gesture.dy * .2;
 
-                let maxXDisplacement = this.blockSizeValue * this.props.levelWidth * (1 / this.state.zoomFactor - 1);
-                let maxYDisplacement = this.blockSizeValue * this.props.levelHeight * (1 / this.state.zoomFactor - 1);
-
-                this.puzzlePositionOffset.X = Math.min(0, Math.max(this.puzzlePositionOffset.X, maxXDisplacement));
-                this.puzzlePositionOffset.Y = Math.min(2 * this.initialPuzzleTopOffset, Math.max(this.puzzlePositionOffset.Y, maxYDisplacement));
+                this.puzzlePositionOffset = this.applyDisplacementLimitations(this.puzzlePositionOffset);
 
                 Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y } }).start();
+        }
+
+        applyDisplacementLimitations(initialPosition: BlockPosition): BlockPosition {
+                let maxXDisplacement = this.blockSizeValue * this.props.levelWidth * (1 / this.state.zoomFactor - 1);
+                let maxYDisplacement = this.blockSizeValue * this.props.levelHeight * (1 / this.state.zoomFactor - 1);
+                let blockPosition = new BlockPosition();
+
+                blockPosition.X = Math.min(0, Math.max(initialPosition.X, maxXDisplacement));
+                blockPosition.Y = Math.min(2 * this.initialPuzzleTopOffset, Math.max(initialPosition.Y, maxYDisplacement));
+                return blockPosition;
         }
 
         processPinch(x1: number, y1: number, x2: number, y2: number) {
@@ -766,8 +818,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         onAlertOkClick() {
                 var blocks = this.loadLevel();
                 this.isHighlightMineShown = false;
-                this.lastMineLeft=-1;
-                this.lastMineTop=-1;
+                this.lastMineLeft = -1;
+                this.lastMineTop = -1;
 
                 let newState = Object.assign(this.state, { blocks: blocks, alertState: { showAlert: false } });
                 this.setState(newState, () => {
