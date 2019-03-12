@@ -164,8 +164,8 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         if (surroundingNonClickedBlocks.length == 0) continue;
 
                                         //console.log("Tutorial Matching surroundingNonClickedBlocks count -- " + surroundingNonClickedBlocks.length);
-                                        //Surrounding clicked blocks of the same value
-                                        let surroundingClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == true && boardState.blocks[x.Position.X][x.Position.Y].Value > 0);
+                                        let surroundingClickedBlocks = boardState.blocks.reduce((x,y)=> x.concat(y)).filter(x=>x.IsClicked && x.Value>0);
+                                        //let surroundingClickedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].IsClicked == true && boardState.blocks[x.Position.X][x.Position.Y].Value > 0);
 
                                         let mainMarkedBlocks = blockInfo.surroundingBlocks.filter(x => boardState.blocks[x.Position.X][x.Position.Y].MarkedState > 0);
                                         let mainMarkedValue = 0
@@ -175,7 +175,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                                         //console.log("Tutorial Matching surroundingClickedBlocks count -- " + surroundingClickedBlocks.length);
                                         for (let clickedBlock of surroundingClickedBlocks) {
-                                                let clickedBlockInfo = this.calculateBlockInfo(clickedBlock.Position.X, clickedBlock.Position.Y, true);
+                                                let clickedBlockInfo = this.calculateBlockInfo(clickedBlock.Left, clickedBlock.Top, true);
                                                 let hasCommonBlocks = true;
                                                 for (let nonClickedBlock of surroundingNonClickedBlocks) {
                                                         let isMatching = clickedBlockInfo.surroundingBlocks.filter(x => x.Position.X == nonClickedBlock.Position.X && x.Position.Y == nonClickedBlock.Position.Y).length > 0;
