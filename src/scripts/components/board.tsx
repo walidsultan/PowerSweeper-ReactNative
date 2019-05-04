@@ -855,22 +855,24 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         saveHighScore(time: number, username: string, photoUrl: string) {
-                return fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
-                        method: 'POST',
-                        headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                                "Name": username,
-                                "Time": time,
-                                "Difficulty": this.props.difficulty,
-                                "PhotoUrl": photoUrl,
-                                "isSignedIn": this.isSignedIn
-                        })
-                }).catch((error) => {
-                        console.error(error);
-                });
+                try{
+                        fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
+                                method: 'POST',
+                                headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                        "Name": username,
+                                        "Time": time,
+                                        "Difficulty": this.props.difficulty,
+                                        "PhotoUrl": photoUrl,
+                                        "isSignedIn": this.isSignedIn
+                                })});
+                }
+                catch(error) {
+                        console.error("Network error--==:: "+ error);
+                };
         }
 
         async signIn() {
