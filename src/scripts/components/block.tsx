@@ -30,8 +30,8 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     };
 
     let imageStyle: StyleProp<ImageStyle> = {
-      width: buttonStyle.width,
-      height: buttonStyle.height,
+     width: buttonStyle.width,
+     height: buttonStyle.height,
       opacity: 1
     }
 
@@ -49,9 +49,9 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
          outputRange: this.props.HighlightTap? ['rgba(100, 100, 100, 1)', 'rgba(200, 200, 200, 1)']: ['rgba(150, 0, 0, 1)', 'rgba(255, 0, 0, 1)']
       });
 
-      let animationSequence = Animated.sequence([Animated.timing(this.state.BlockColor, { toValue: 300, duration: 1000 }),
-      Animated.timing(this.state.BlockColor, { toValue: 0, duration: 1000 })]);
-      Animated.loop(animationSequence).start();
+      let animationSequence = Animated.sequence([Animated.timing(this.state.BlockColor, { toValue: 300, duration: 1000,useNativeDriver:false }),
+      Animated.timing(this.state.BlockColor, { toValue: 0, duration: 1000,useNativeDriver:false })]);
+     Animated.loop(animationSequence).start();
 
       blockContent = <Animated.View style={{ backgroundColor: color, flex: 1, borderRadius:5}}>
                         {this.getMineElement(imageStyle)}
@@ -66,9 +66,10 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
 
     return (
-      <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={() => this.onTouchEnd()} style={styles} underlayColor='#ddd'>
-        {blockContent}
-      </TouchableHighlight>
+
+       <TouchableHighlight onPress={() => this.onLeftClick()} onPressIn={() => this.onTouchStart()} onPressOut={() => this.onTouchEnd()} style={styles} underlayColor='#ddd'>
+          {blockContent} 
+          </TouchableHighlight>
     );
   }
 

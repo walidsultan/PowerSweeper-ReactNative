@@ -1,9 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 10996,
-  "expoServerNgrokUrl": "https://xx-dnp.wsultan.powersweeper-reactnative.exp.direct",
-  "packagerNgrokUrl": "https://packager.xx-dnp.wsultan.powersweeper-reactnative.exp.direct",
-  "ngrokPid": 10360
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
+  "webpackServerPort": null
 }

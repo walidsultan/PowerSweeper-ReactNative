@@ -88,20 +88,20 @@ export default class HighScores extends React.Component<HighScoresInterface, Hig
 
     getRenderedScores(scoresData: HighScoreType[]) {
         if (scoresData) {
-            let scores = [];
+           let scores = [];
             let index = 1;
             for (let score of scoresData) {
-                scores.push(
+               scores.push(
                     <View style={HighscoresStyles.grid}>
                         <View style={{ justifyContent: 'center', paddingLeft: 5,paddingRight:20 }}><Text style={HighscoresStyles.order}>{index}</Text></View>
                         <View style={{ justifyContent: 'center' }}><Image source={{ uri: score.PhotoUrl }} style={{ width: 50, height: 50, borderRadius: 25 }}></Image></View>
                         <View style={{ justifyContent:'flex-start', paddingLeft: 20 }}><Text style={HighscoresStyles.name}>{score.Name}</Text>
                             <Text style={HighscoresStyles.time}>{score.Time + ' s'}</Text></View>
                     </View>
-                )
+               )
                 index++;
             }
-            return scores;
+           return scores;
         }
         return null;
     }

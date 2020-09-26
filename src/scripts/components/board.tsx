@@ -10,11 +10,12 @@ import { PageView } from '../enums/pageView';
 import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, AsyncStorage, Text, TouchableHighlight } from 'react-native';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
-import * as Expo from "expo";
+import { Audio } from 'expo-av';
+import * as Google from 'expo-google-app-auth';
 
-const stretchSound = new Expo.Audio.Sound();
-const explodeSound = new Expo.Audio.Sound();
-const succeedSound = new Expo.Audio.Sound();
+const stretchSound = new Audio.Sound();
+const explodeSound = new Audio.Sound();
+const succeedSound = new Audio.Sound();
 
 export default class Board extends React.Component<BoardInterface, BoardState> {
         private mines: number[][];
@@ -591,8 +592,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let puzzle = [];
 
                 // Add blocks
+                
                 for (let row of this.state.blocks) {
                         for (let block of row) {
+
                                 puzzle.push(<Block key={block.Left + 'ID' + block.Top}
                                         Left={block.Left}
                                         Top={block.Top}
@@ -654,6 +657,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         componentDidMount() {
+                console.log("Component did mount");
                 this.updateDimensions();
                 BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
         }
@@ -806,7 +810,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         }
                         this.puzzlePositionOffset.Y = -(puzzleHeight - Dimensions.get('window').height) / 2;
 
-                        Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y }, bounciness: 10 }).start(() => this.startupAnimationCompleted());
+                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y } }).start(() => this.startupAnimationCompleted());
                 });
 
                 this.state.blockSize.setValue(blockSize);
@@ -877,7 +881,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         async signIn() {
                 try {
-                        const result = await Expo.Google.logInAsync({
+                        const result = await Google.logInAsync({
                                 androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
                                 //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
                                 scopes: ["profile", "email"]
@@ -929,23 +933,24 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let tutorialBanner = null;
                 if (this.props.isTutorial) {
                         // console.log("tutorial text -- " + this.tutorialText);
-                        tutorialBanner = <View style={{ flex: 1, backgroundColor: '#CCC', borderRadius: 7, margin: 5, padding: 5, position: 'absolute', alignSelf: 'stretch', top: 0, left: 0, right: 0, flexDirection: 'row' }}><Text>{this.tutorialText}</Text></View>;
+                        tutorialBanner = <View style={{ flex: 1, backgroundColor: '#CCC', borderRadius: 7, margin: 5, padding: 5, position: 'absolute', alignSelf: 'stretch', top: 0, left: 0, right: 0, flexDirection: 'row' }}>
+                                <Text style={{color:'#990011', fontWeight:'bold', fontSize: 24 }}>{this.tutorialText}</Text>
+                        </View>;
                 }
 
                 return (
                         <View style={BoardStyles.board} {...this.panResponder.panHandlers}>
-                                <View style={background}>
+                               <View style={background}>
                                         <Image source={require('../../../assets/images/c9c685ba.png')} style={background} ></Image>
                                 </View>
 
                                 <View style={BoardStyles.frame} >
                                         <Animated.View ref={this.puzzleRef} style={[BoardStyles.puzzle, puzzlePosition]}>
-                                                {puzzle}
+                                                {puzzle} 
                                         </Animated.View>
                                 </View>
-
                                 {tutorialBanner}
-
+ 
                                 <Alert title={this.state.alertState.alertTitle}
                                         showPopup={this.state.alertState.showAlert}
                                         message={this.state.alertState.alertMessage}
@@ -961,7 +966,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                 </View>
                                         </View>
                                         }
-                                </Alert>
+                                </Alert>  
                         </View>
                 );
         }

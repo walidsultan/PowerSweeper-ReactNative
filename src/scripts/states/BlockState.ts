@@ -3,6 +3,7 @@ import { Animated } from "react-native";
 export default class BlockState {
     constructor(){
         this.BlockColor= new Animated.Value(0);
+        this.BlockSize=0;
     }
     BlockSize:number;
     BlockColor:Animated.Value;

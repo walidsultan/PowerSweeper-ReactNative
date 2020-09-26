@@ -1,10 +1,10 @@
 import { Difficulty } from "../enums/difficulty";
-import * as Expo from "expo";
+import { Audio } from 'expo-av';
 
 export default interface MenuInterface {
     onNewLevel(difficulty:Difficulty):any;   
     onTutorial():any;
-    musicReference: Expo.Audio.Sound; 
+    musicReference: Audio.Sound; 
     onAssistChange:any;
     isAssistEnabled:boolean;
 }

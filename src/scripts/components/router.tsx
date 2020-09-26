@@ -7,9 +7,9 @@ import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
 import { View, StyleProp, ViewStyle, StatusBar, AsyncStorage } from 'react-native';
-import * as Expo from "expo";
+import { Audio } from 'expo-av';
 
-const soundObject = new Expo.Audio.Sound();
+const soundObject = new Audio.Sound();
 
 export default class Router extends React.Component<RouterInterface, RouterState> {
 

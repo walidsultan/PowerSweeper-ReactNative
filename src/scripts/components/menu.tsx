@@ -3,12 +3,12 @@ import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
 import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage, Switch, Linking } from 'react-native';
 import MenuStyles from '../../styles/menuStyles';
-import { Font } from 'expo';
+import * as Font from 'expo-font';
 import MenuContent from './MenuContent';
 import LevelDifficulty from './LevelDifficulty';
 import { Difficulty } from '../enums/difficulty';
 import HighScores from './HighScores';
-import * as Expo from "expo";
+import * as Google from 'expo-google-app-auth';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -371,7 +371,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
     async signIn() {
         try {
-            const result = await Expo.Google.logInAsync({
+            const result = await Google.logInAsync({
                 androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
                 //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
                 scopes: ["profile", "email"]
