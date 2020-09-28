@@ -39,7 +39,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 }
             });
             if (!isSignedIn) {
-                Animated.timing(this.state.signInButtonOpacity, { toValue: 1, duration: 700, delay: 1000 }).start();
+                Animated.timing(this.state.signInButtonOpacity, { toValue: 1, duration: 700, delay: 1000 ,useNativeDriver:false}).start();
             }
             this.setState({ isSignedIn: isSignedIn });
         });

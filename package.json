@@ -30,10 +30,10 @@
     "react-native-tab-view": "^2.15.1"
   },
   "devDependencies": {
-    "@types/expo": "^30.0.0",
-    "@types/react": "^16.4.18",
-    "@types/react-dom": "^16.0.9",
-    "@types/react-native": "^0.57.7",
+    "@types/expo": "^33.0.1",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-native": "^0.63.22",
     "@types/react-native-tab-view": "^1.0.2",
     "babel-preset-expo": "^5.0.0",
     "concurrently": "^4.0.1",

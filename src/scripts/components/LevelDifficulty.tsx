@@ -59,7 +59,7 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
  
 
     buttonPress(animatedValue: Animated.Value, callback: any) {
-        Animated.timing(animatedValue, { toValue: 0.1, duration: 500 }).start(() => {
+        Animated.timing(animatedValue, { toValue: 0.1, duration: 500,useNativeDriver:false }).start(() => {
             callback();
         });
     }

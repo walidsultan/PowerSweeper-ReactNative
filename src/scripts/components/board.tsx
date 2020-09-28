@@ -304,7 +304,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         this.puzzlePositionOffset.X = targetPuzzleOffset.X;
                         this.puzzlePositionOffset.Y = targetPuzzleOffset.Y;
 
-                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: targetPuzzleOffset.X, y: targetPuzzleOffset.Y }, duration: 1000, delay: 300 }).start();
+                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: targetPuzzleOffset.X, y: targetPuzzleOffset.Y }, duration: 1000, delay: 300,useNativeDriver:false }).start();
                 }
         }
 
@@ -729,7 +729,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.puzzlePositionOffset = this.applyDisplacementLimitations(this.puzzlePositionOffset);
 
-                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y } }).start();
+                Animated.spring(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y },useNativeDriver:false }).start();
         }
 
         applyDisplacementLimitations(initialPosition: BlockPosition): BlockPosition {
@@ -803,14 +803,14 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 let puzzleWidth = blockSize * this.props.levelWidth;
                 let puzzleHeight = blockSize * this.props.levelHeight;
 
-                Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, duration: 700 }).start(() => {
+                Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: 0, y: this.initialPuzzleTopOffset }, duration: 700 ,useNativeDriver:false}).start(() => {
 
                         if (puzzleWidth > Dimensions.get('window').width) {
                                 this.puzzlePositionOffset.X = -(puzzleWidth - Dimensions.get('window').width) / 2;
                         }
                         this.puzzlePositionOffset.Y = -(puzzleHeight - Dimensions.get('window').height) / 2;
 
-                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y } }).start(() => this.startupAnimationCompleted());
+                        Animated.timing(this.state.puzzlePositionOffset, { toValue: { x: this.puzzlePositionOffset.X, y: this.puzzlePositionOffset.Y },useNativeDriver:false }).start(() => this.startupAnimationCompleted());
                 });
 
                 this.state.blockSize.setValue(blockSize);
