@@ -105,7 +105,7 @@ export default class Block extends React.Component<BlockInterface, BlockState> {
     }
   }
 
-  getMineImagePath(mineType: MineType): ImageSourcePropType {
+  getMineImagePath(mineType: MineType): ImageSourcePropType |null{
     switch (mineType) {
       case MineType.Large:
         return require('../../../assets/images/BigMine.png');

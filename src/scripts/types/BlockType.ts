@@ -10,7 +10,7 @@ export default class BlockType implements BlockInterface {
     onClick: any;
     onContextMenu: any;
     HasMine: boolean;
-    Mine: MineType;
+    Mine: MineType|undefined;
     IsClicked: boolean;
     MarkedState: MineType = 0;
     IsTutorial:boolean =false;

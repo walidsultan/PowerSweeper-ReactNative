@@ -1,7 +1,6 @@
-
 {
   "compilerOptions": {
-      "module":"es2015",
+    "module":"es2015",
       "target": "es2015",
       "jsx": "react",
       "rootDir": "src",
@@ -16,26 +15,7 @@
       "noUnusedParameters": true,
       "noImplicitReturns": true,
       "skipLibCheck": true,
-      "moduleResolution":"Node"
+      "moduleResolution":"Node"                    
   },
-  "filesGlob": [
-      "typings/index.d.ts",
-      "src/**/*.ts",
-      "src/**/*.tsx",
-      "node_modules/typescript/lib/lib.es6.d.ts"
-  ],
-  "types": [
-    "react",
-    "react-dom",
-    "react-native"
-  ],
-  "exclude":[
-      "build", 
-      "node_modules",
-      "jest.config.js",
-      "App.js",
-      "babel.config.js"
-      
-  ],
-  "compileOnSave": false
+  "include": ["src/**/*.ts", "src/**/*.tsx"]  // Include all TypeScript and TSX files in the 'src' directory
 }

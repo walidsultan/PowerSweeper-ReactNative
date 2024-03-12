@@ -4,12 +4,12 @@
     "description": "Puzzle game based on the classic windows game minesweeper",
     "slug": "Mine-Rage",
     "privacy": "public",
-    "sdkVersion": "39.0.0",
+    "sdkVersion": "50.0.0",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.0.23",
+    "version": "1.0.24",
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "splash": {
@@ -36,7 +36,7 @@
       },
       "package": "com.ws.minerage",
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE","VIBRATE"],
-      "versionCode":23
+      "versionCode":24
     }
   }
 }

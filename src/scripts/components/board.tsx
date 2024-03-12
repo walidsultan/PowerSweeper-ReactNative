@@ -5,13 +5,12 @@ import { MineType } from '../enums/mineType';
 import BoardState from '../states/BoardState';
 import BlockPointer from '../types/blockPointer';
 import BlockType from '../types/BlockType';
-import Alert from './Alert';
 import { PageView } from '../enums/pageView';
-import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, AsyncStorage, Text, TouchableHighlight } from 'react-native';
+import { View, Dimensions, Vibration, PanResponder, PanResponderGestureState, Animated, BackHandler, Image, StyleProp, ImageStyle, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import BoardStyles from '../../styles/boardStyles';
 import BlockPosition from '../types/blockPosition';
 import { Audio } from 'expo-av';
-import * as Google from 'expo-google-app-auth';
 
 const stretchSound = new Audio.Sound();
 const explodeSound = new Audio.Sound();
@@ -30,15 +29,15 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         private isInPinchMode: boolean = false;
         private defaultBlockSize: number = 75;
         private blockSizeValue: number;
-        private startTime: Date;
-        private currentUsername: string;
-        private currentUserPhoto: string;
+        // private startTime: Date;
+        // private currentUsername: string;
+        // private currentUserPhoto: string;
         private isSignedIn: boolean = false;
 
         private isVibrationEnabled: boolean = true;
         private areSoundsEnabled: boolean = true;
 
-        private puzzleDuration: number;
+        // private puzzleDuration: number;
 
         private tutorialText: string;
         private isHighlightMineShown: boolean = false;
@@ -47,7 +46,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         constructor(props: any) {
                 super(props);
-                this.startTime = new Date();
+               // this.startTime = new Date();
 
                 var blocks = this.loadLevel();
 
@@ -64,10 +63,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
                 this.loadSounds();
                 this.loadSettings();
-                this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
+                // this.saveLog("Start new game -- Difficulty: " + this.props.difficulty + " -- isTutorial: " + this.props.isTutorial);
 
                 if (this.props.isTutorial) {
-                        this.saveLog("User started tutorial");
+                        // this.saveLog("User started tutorial");
                         this.tutorialText = "Tap the highlighted button.";
                         //console.log(this.mines);
                 }
@@ -325,11 +324,11 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
         }
 
         loadSettings() {
-                AsyncStorage.multiGet(['areSoundsEnabled', 'isVibrationEnabled'], (err, stores) => {
+                AsyncStorage.multiGet(['areSoundsEnabled', 'isVibrationEnabled'], (err:any, stores:any) => {
                         if (err) {
                                 console.log(err);
                         }
-                        stores.map((result, i, store) => {
+                        stores.map((result:any, i:any, store:any) => {
                                 console.log(result);
                                 let key = store[i][0];
                                 let value = store[i][1];
@@ -352,23 +351,23 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
 
         setUsername() {
 
-                AsyncStorage.multiGet(['name', 'photoUrl'], (err, stores) => {
+                AsyncStorage.multiGet(['name', 'photoUrl'], (err:any, stores:any) => {
                         if (err) {
                                 console.log(err);
                         }
-                        stores.map((result, i, store) => {
+                        stores.map((result:any, i:any, store:any) => {
                                 console.log(result);
                                 let key = store[i][0];
                                 let value = store[i][1];
                                 if (key == "name" && value) {
                                         this.isSignedIn = true;
-                                        this.currentUsername = value;
+                                        //this.currentUsername = value;
                                 } else if (key == "photoUrl" && value) {
-                                        this.currentUserPhoto = value;
+                                     //   this.currentUserPhoto = value;
                                 }
                         });
                         if (!this.isSignedIn) {
-                                this.currentUsername = 'Anonymous';
+                             //   this.currentUsername = 'Anonymous';
                         }
                 });
         }
@@ -450,10 +449,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 if (this.isVibrationEnabled) {
                                         Vibration.vibrate([30, 50, 100, 60, 40, 140], false);
                                 }
-                                this.saveLog("User clicked mine -- Difficulty: " + this.props.difficulty);
+                                // this.saveLog("User clicked mine -- Difficulty: " + this.props.difficulty);
                         } else {
                                 // make sure the first click is not a mine
-                                let newBlocks: BlockType[][] = null;
+                                let newBlocks: BlockType[][]|null = null;
                                 do {
                                         newBlocks = this.loadLevel();
                                 } while (newBlocks[left][top].HasMine);
@@ -630,13 +629,13 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                         }
                                         this.state.alertState.showAlert = true;
                                         //get the time the player took to solve the puzzle
-                                        var endDate = new Date();
-                                        this.puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
-                                        this.saveHighScore(this.puzzleDuration, this.currentUsername, this.currentUserPhoto);
+                                       // var endDate = new Date();
+                                      //  this.puzzleDuration = (endDate.getTime() - this.startTime.getTime()) / 1000;
+                                        // this.saveHighScore(this.puzzleDuration, this.currentUsername, this.currentUserPhoto);
 
                                         this.setState(newState);
 
-                                        this.saveLog("User solved level -- Difficulty: " + this.props.difficulty);
+                                        // this.saveLog("User solved level -- Difficulty: " + this.props.difficulty);
                                 }
                         }
                 }
@@ -842,66 +841,66 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                 this.props.onRedirect(PageView.Menu);
         }
 
-        saveLog(text: string) {
-                return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
-                        method: 'POST',
-                        headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                                'Text': text
-                        })
-                })
-                        .catch((error) => {
-                                console.error(error);
-                        });
-        }
+        // saveLog(text: string) {
+        //         return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                         'Accept': 'application/json',
+        //                         'Content-Type': 'application/json'
+        //                 },
+        //                 body: JSON.stringify({
+        //                         'Text': text
+        //                 })
+        //         })
+        //                 .catch((error) => {
+        //                         console.error(error);
+        //                 });
+        // }
 
-        saveHighScore(time: number, username: string, photoUrl: string) {
-                try{
-                        fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
-                                method: 'POST',
-                                headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                        "Name": username,
-                                        "Time": time,
-                                        "Difficulty": this.props.difficulty,
-                                        "PhotoUrl": photoUrl,
-                                        "isSignedIn": this.isSignedIn
-                                })});
-                }
-                catch(error) {
-                        console.error("Network error--==:: "+ error);
-                };
-        }
+        // saveHighScore(time: number, username: string, photoUrl: string) {
+        //         try{
+        //                 fetch('http://walidsultan.net/MineRageApi/api/HighScores/SaveHighscore', {
+        //                         method: 'POST',
+        //                         headers: {
+        //                                 'Accept': 'application/json',
+        //                                 'Content-Type': 'application/json'
+        //                         },
+        //                         body: JSON.stringify({
+        //                                 "Name": username,
+        //                                 "Time": time,
+        //                                 "Difficulty": this.props.difficulty,
+        //                                 "PhotoUrl": photoUrl,
+        //                                 "isSignedIn": this.isSignedIn
+        //                         })});
+        //         }
+        //         catch(error) {
+        //                 console.error("Network error--==:: "+ error);
+        //         };
+        // }
 
-        async signIn() {
-                try {
-                        const result = await Google.logInAsync({
-                                androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
-                                //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
-                                scopes: ["profile", "email"]
-                        });
-                        if (result.type === "success") {
-                                AsyncStorage.multiSet([['name', result.user.name],
-                                ['photoUrl', result.user.photoUrl]]);
-                                this.isSignedIn = true;
-                                this.saveHighScore(this.puzzleDuration, result.user.name, result.user.photoUrl);
-                                this.saveLog("User: " + result.user.name + " logged in successfully.");
-                        } else {
-                                this.saveLog("error: " + result.type)
-                        }
+        // async signIn() {
+        //         try {
+        //                 const result = await Google.logInAsync({
+        //                         androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
+        //                         //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
+        //                         scopes: ["profile", "email"]
+        //                 });
+        //                 if (result.type === "success") {
+        //                         AsyncStorage.multiSet([['name', result.user.name],
+        //                         ['photoUrl', result.user.photoUrl]]);
+        //                         this.isSignedIn = true;
+        //                         // this.saveHighScore(this.puzzleDuration, result.user.name, result.user.photoUrl);
+        //                         // this.saveLog("User: " + result.user.name + " logged in successfully.");
+        //                 } else {
+        //                         // this.saveLog("error: " + result.type)
+        //                 }
 
-                } catch (e) {
-                        this.saveLog("error: " + e)
-                        console.log("error", e)
-                }
-                this.props.onRedirect(PageView.Menu);
-        }
+        //         } catch (e) {
+        //                 // this.saveLog("error: " + e)
+        //                 console.log("error", e)
+        //         }
+        //         this.props.onRedirect(PageView.Menu);
+        // }
 
         render() {
                 let puzzle = this.generatePuzzle(this.props.levelWidth, this.props.levelHeight);
@@ -925,10 +924,10 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                         height: undefined,
                 }
 
-                let signInImageStyle: StyleProp<ImageStyle> = {
-                        width: 150,
-                        height: 36
-                }
+                // let signInImageStyle: StyleProp<ImageStyle> = {
+                //         width: 150,
+                //         height: 36
+                // }
 
                 let tutorialBanner = null;
                 if (this.props.isTutorial) {
@@ -951,7 +950,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                 </View>
                                 {tutorialBanner}
  
-                                <Alert title={this.state.alertState.alertTitle}
+                                {/* <Alert title={this.state.alertState.alertTitle}
                                         showPopup={this.state.alertState.showAlert}
                                         message={this.state.alertState.alertMessage}
                                         onOkClick={() => this.onAlertOkClick()}
@@ -966,7 +965,7 @@ export default class Board extends React.Component<BoardInterface, BoardState> {
                                                 </View>
                                         </View>
                                         }
-                                </Alert>  
+                                </Alert>   */}
                         </View>
                 );
         }

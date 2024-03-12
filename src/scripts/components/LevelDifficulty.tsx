@@ -1,6 +1,6 @@
 // import '../../css/levelDifficulty.less';
 import * as React from 'react';
-import LevelDifficultyInterface from '../interfaces/LevelDiffiCultyInterface';
+import LevelDifficultyInterface from '../interfaces/LevelDifficultyInterface';
 import Popup from './popup';
 import { View, TouchableHighlight, Text, Animated, Switch } from 'react-native';
 import LevelDifficultyStyles from '../../styles/levelDifficultyStyles';
@@ -26,6 +26,9 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
         let hardButtonStyle = {
             opacity: this.state.HardButtonOpacity
         }
+        let insaneButtonStyle={
+            opacity: this.state.InsaneButtonOpacity
+        }
         return (
             <Popup showPopup={this.props.showPopup}
                 title={this.props.title}
@@ -45,6 +48,11 @@ export default class LevelDifficulty extends React.Component<LevelDifficultyInte
                     <Animated.View style={[LevelDifficultyStyles.button, hardButtonStyle]}>
                         <TouchableHighlight onPress={() => this.buttonPress(this.state.HardButtonOpacity, this.props.onHardLevelClick)} style={LevelDifficultyStyles.buttonHighlight} underlayColor='#eee'>
                             <Text style={LevelDifficultyStyles.buttonText}>Hard</Text>
+                        </TouchableHighlight>
+                    </Animated.View>
+                    <Animated.View style={[LevelDifficultyStyles.button, insaneButtonStyle]}>
+                        <TouchableHighlight onPress={() => this.buttonPress(this.state.InsaneButtonOpacity, this.props.onInsaneLevelClick)} style={LevelDifficultyStyles.buttonHighlight} underlayColor='#eee'>
+                            <Text style={LevelDifficultyStyles.buttonText}>Insane</Text>
                         </TouchableHighlight>
                     </Animated.View>
                     <View style={LevelDifficultyStyles.levelAssist}>

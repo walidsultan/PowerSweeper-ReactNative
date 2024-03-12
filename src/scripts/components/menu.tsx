@@ -1,14 +1,14 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, AsyncStorage, Switch, Linking } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, Switch, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import MenuStyles from '../../styles/menuStyles';
 import * as Font from 'expo-font';
 import MenuContent from './MenuContent';
 import LevelDifficulty from './LevelDifficulty';
 import { Difficulty } from '../enums/difficulty';
 import HighScores from './HighScores';
-import * as Google from 'expo-google-app-auth';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
@@ -25,12 +25,12 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
         // AsyncStorage.multiRemove(['name', 'photoUrl']);
 
-        AsyncStorage.multiGet(['name', 'photoUrl'], (err, stores) => {
+        AsyncStorage.multiGet(['name', 'photoUrl'], (err:any, stores:any) => {
             if (err) {
                 console.log(err);
             }
             let isSignedIn = false;
-            stores.map((result, i, store) => {
+            stores.map((result:any, i:any, store:any) => {
                 console.log(result);
                 let key = store[i][0];
                 let value = store[i][1];
@@ -59,10 +59,10 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
             height: undefined
         }
 
-        let signInImageStyle: StyleProp<ImageStyle> = {
-            width: 150,
-            height: 36
-        }
+        // let signInImageStyle: StyleProp<ImageStyle> = {
+        //     width: 150,
+        //     height: 36
+        // }
 
         let settingsImageStyle: StyleProp<ImageStyle> = {
             width: 50,
@@ -82,11 +82,6 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     </TouchableHighlight>
                 </View>
                 <View style={MenuStyles.buttonContainer}>
-                    <TouchableHighlight onPress={() => { this.OnHighScoresClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
-                        <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Leaderboards</Text>
-                    </TouchableHighlight>
-                </View>
-                <View style={MenuStyles.buttonContainer}>
                     <TouchableHighlight onPress={() => { this.OnInstructionsClick(); }} style={MenuStyles.buttonHighlight} underlayColor="#ddd">
                         <Text style={this.state.fontLoaded ? MenuStyles.button : undefined}>Instructions</Text>
                     </TouchableHighlight>
@@ -99,11 +94,11 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
 
             </View>
-            {!this.state.isSignedIn && <Animated.View style={[MenuStyles.signInImageContainer, { opacity: this.state.signInButtonOpacity }]}>
+            {/* {!this.state.isSignedIn && <Animated.View style={[MenuStyles.signInImageContainer, { opacity: this.state.signInButtonOpacity }]}>
                 <TouchableHighlight onPress={async () => { await this.signIn(); }} underlayColor="#ddd">
                     <Image source={require('../../../assets/images/google_signin_light.png')} style={signInImageStyle}></Image>
                 </TouchableHighlight>
-            </Animated.View>}
+            </Animated.View>} */}
 
             <View style={MenuStyles.settingsContainer}>
                 <TouchableHighlight onPress={() => { this.onSettingsClick(); }} underlayColor="#ddd">
@@ -116,9 +111,11 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 onEasyLevelClick={() => this.props.onNewLevel(Difficulty.Easy)}
                 onMediumLevelClick={() => this.props.onNewLevel(Difficulty.Medium)}
                 onHardLevelClick={() => this.props.onNewLevel(Difficulty.Hard)}
+                onInsaneLevelClick={() => this.props.onNewLevel(Difficulty.Insane)}
                 onAssistChange={this.props.onAssistChange}
                 isAssistEnabled={this.props.isAssistEnabled}
                 title='Difficulty'
+                children={null}
             ></LevelDifficulty>
             <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
@@ -235,11 +232,11 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
     onSettingsClick() {
-        AsyncStorage.multiGet(['isVibrationEnabled', 'isMusicEnabled', 'areSoundsEnabled'], (err, stores) => {
+        AsyncStorage.multiGet(['isVibrationEnabled', 'isMusicEnabled', 'areSoundsEnabled'], (err:any, stores:any) => {
             if (err) {
                 console.log(err);
             }
-            stores.map((result, i, store) => {
+            stores.map((result:any, i:any, store:any) => {
                 console.log(result);
                 let key = store[i][0];
                 let value = store[i][1];
@@ -307,21 +304,21 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
     }
 
 
-    saveLog(text: string) {
-        return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'Text': text
-            })
-        })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
+    // saveLog(text: string) {
+    //     return fetch('http://walidsultan.net/MineRageApi/api/Logs/SaveLog', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             'Text': text
+    //         })
+    //     })
+    //         .catch((error) => {
+    //             console.error(error);
+    //         });
+    // }
 
     async componentDidMount() {
         await Font.loadAsync({
@@ -369,25 +366,25 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         this.setState({ showNewLevelPopup: false });
     }
 
-    async signIn() {
-        try {
-            const result = await Google.logInAsync({
-                androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
-                //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
-                scopes: ["profile", "email"]
-            });
-            if (result.type === "success") {
-                AsyncStorage.multiSet([['name', result.user.name],
-                ['photoUrl', result.user.photoUrl]]);
-                this.setState({ isSignedIn: true });
-                this.saveLog("User: " + result.user.name + " logged in successfully.")
-            } else {
-                this.saveLog("error: " + result.type)
-            }
+    // async signIn() {
+    //     try {
+    //         const result = await Google.logInAsync({
+    //             androidStandaloneAppClientId: "568265247315-koa51h0vjmqphbbq1rj9h61kaf3psid5.apps.googleusercontent.com",
+    //             //iosClientId: YOUR_CLIENT_ID_HERE,  <-- if you use iOS
+    //             scopes: ["profile", "email"]
+    //         });
+    //         if (result.type === "success") {
+    //             AsyncStorage.multiSet([['name', result.user.name],
+    //             ['photoUrl', result.user.photoUrl]]);
+    //             this.setState({ isSignedIn: true });
+    //             this.saveLog("User: " + result.user.name + " logged in successfully.")
+    //         } else {
+    //             this.saveLog("error: " + result.type)
+    //         }
 
-        } catch (e) {
-            this.saveLog("error: " + e)
-            console.log("error", e)
-        }
-    }
+    //     } catch (e) {
+    //         this.saveLog("error: " + e)
+    //         console.log("error", e)
+    //     }
+    // }
 }

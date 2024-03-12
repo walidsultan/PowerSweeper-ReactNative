@@ -6,7 +6,8 @@ import { PageView } from '../enums/pageView';
 import Menu from './menu';
 import { Difficulty } from '../enums/difficulty';
 import Board from './board';
-import { View, StyleProp, ViewStyle, StatusBar, AsyncStorage } from 'react-native';
+import { View, StyleProp, ViewStyle, StatusBar } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 
 const soundObject = new Audio.Sound();
@@ -19,7 +20,7 @@ export default class Router extends React.Component<RouterInterface, RouterState
 
         this.playBackGroundMusic();
 
-           AsyncStorage.getItem('isAssistEnabled',(error,result)=>{
+           AsyncStorage.getItem('isAssistEnabled',(error:any,result:any)=>{
               
             if(result==='false'){
                 this.setState({ isAssistEnabled: false });
@@ -98,6 +99,8 @@ export default class Router extends React.Component<RouterInterface, RouterState
                 return <Board bigMinesCount={3} mediumMinesCount={5} smallMinesCount={7} levelHeight={10} levelWidth={10} difficulty={Difficulty.Medium} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
             case Difficulty.Hard:
                 return <Board bigMinesCount={6} mediumMinesCount={10} smallMinesCount={14} levelHeight={15} levelWidth={15} difficulty={Difficulty.Hard} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
+            case Difficulty.Insane:
+                return <Board bigMinesCount={24} mediumMinesCount={40} smallMinesCount={56} levelHeight={30} levelWidth={30} difficulty={Difficulty.Hard} onRedirect={(pv: any) => this.onRedirect(pv)} isTutorial={isTutorial} />;
             default:
                 return <div></div>;
         }
