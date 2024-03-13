@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.24",
+    "version": "1.0.25",
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "splash": {
@@ -28,15 +28,21 @@
       "bundleIdentifier": "com.ws.minerage"
     },
     "android": {
-      "config":{
-        "googleSignIn":{
-          "apiKey":"AIzaSyAjmueRq9LFbI3DI1uT-qKhor57uvjVgII",
-          "certificateHash":"0B:84:16:27:6B:14:2B:BA:9A:BC:DC:A4:FC:9F:0B:E8:AB:71:78:42"
-        }
+      "config": {
+      
       },
       "package": "com.ws.minerage",
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE","VIBRATE"],
-      "versionCode":24
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "VIBRATE"
+      ],
+      "versionCode": 25
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7151c540-f3b3-11e8-b3a9-496edb2b8764"
+      }
     }
   }
 }

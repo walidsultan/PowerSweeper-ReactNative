@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module":"es2015",
-      "target": "es2015",
+    "module":"commonjs",
+      "target": "es5",
       "jsx": "react",
       "rootDir": "src",
       "outDir": "build",
@@ -15,7 +15,8 @@
       "noUnusedParameters": true,
       "noImplicitReturns": true,
       "skipLibCheck": true,
-      "moduleResolution":"Node"                    
+      "moduleResolution":"Node" ,
+      "strict": false
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]  // Include all TypeScript and TSX files in the 'src' directory
 }
