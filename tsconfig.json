@@ -1,22 +1,27 @@
 {
   "compilerOptions": {
-    "module":"commonjs",
-      "target": "es5",
-      "jsx": "react",
-      "rootDir": "src",
-      "outDir": "build",
-      "allowSyntheticDefaultImports": true,
-      "noImplicitAny": true,
-      "sourceMap": true,
-      "experimentalDecorators": true,
-      "preserveConstEnums": true,
-      "allowJs": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "noImplicitReturns": true,
-      "skipLibCheck": true,
-      "moduleResolution":"Node" ,
-      "strict": false
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "rootDir": "src",
+    "outDir": "build",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "preserveConstEnums": true,
+    "allowJs": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Node",
+    "strict": false,
+    "noEmit": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]  // Include all TypeScript and TSX files in the 'src' directory
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "extends": "expo/tsconfig.base"
 }

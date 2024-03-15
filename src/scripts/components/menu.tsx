@@ -1,20 +1,20 @@
 import * as React from 'react';
 import MenuInterface from '../interfaces/MenuInterface';
 import MenuState from '../states/MenuState';
-import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, TextInput, ActivityIndicator, Animated, Switch, Linking } from 'react-native';
+import { Text, View, TouchableHighlight, FlatList, Image, StyleProp, ImageStyle, ActivityIndicator, Animated, Switch, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MenuStyles from '../../styles/menuStyles';
 import * as Font from 'expo-font';
 import MenuContent from './MenuContent';
 import LevelDifficulty from './LevelDifficulty';
 import { Difficulty } from '../enums/difficulty';
-import HighScores from './HighScores';
+// import HighScores from './HighScores';
 
 export default class Menu extends React.Component<MenuInterface, MenuState> {
 
     private menuRef: any;
     private popupWidthRatio: number = 0.6;
-    private feedbackText: string;
+    // private feedbackText: string;
 
     constructor(props: any) {
         super(props);
@@ -137,7 +137,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
 
             </MenuContent>
 
-            <MenuContent
+            {/* <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Feedback'
                 showPopup={this.state.showFeedbackPopup}
@@ -161,9 +161,9 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                     :
                     <View><Text>Thanks for your feedback!</Text></View>
                 }
-            </MenuContent>
+            </MenuContent> */}
 
-            <MenuContent
+            {/* <MenuContent
                 onCloseClick={() => this.onMenuContentCloseClick()}
                 title='Leaderboards'
                 showPopup={this.state.showHighScoresPopup}
@@ -171,7 +171,7 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
                 <View style={MenuStyles.highScoreContainer}>
                     <HighScores></HighScores>
                 </View>
-            </MenuContent>
+            </MenuContent> */}
 
 
             <MenuContent
@@ -285,23 +285,23 @@ export default class Menu extends React.Component<MenuInterface, MenuState> {
         return styles;
     }
 
-    OnSendFeedbackClick() {
-        this.setState({ isSendingFeedback: true });
+    // OnSendFeedbackClick() {
+    //     this.setState({ isSendingFeedback: true });
 
-        return fetch('http://walidsultan.net/MineRageApi/api/Feedback/save', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'Text': this.feedbackText
-            })
-        }).then(() => this.setState({ isSendingFeedback: false, isFeedbackSent: true }))
-            .catch((error) => {
-                console.error(error);
-            });
-    }
+    //     return fetch('http://walidsultan.net/MineRageApi/api/Feedback/save', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             'Text': this.feedbackText
+    //         })
+    //     }).then(() => this.setState({ isSendingFeedback: false, isFeedbackSent: true }))
+    //         .catch((error) => {
+    //             console.error(error);
+    //         });
+    // }
 
 
     // saveLog(text: string) {
