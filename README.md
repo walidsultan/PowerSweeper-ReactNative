@@ -1,4 +1,5 @@
-[Mine Rage] - A React Native Expo Game (Typescript)
+# [Mine Rage] - A React Native Expo Game (Typescript)
+
 This is a React Native game built with TypeScript and Expo.
 
 ✨ Features
