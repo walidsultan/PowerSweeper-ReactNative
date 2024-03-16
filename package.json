@@ -8,7 +8,6 @@
     "ios": "expo start --ios",
     "eject": "expo eject",
     "lint": "tslint src/**/*.ts",
-    "tsc": "tsc -p ./tsconfig.json",
     "clean": "rimraf build",
     "build": "yarn run clean && yarn run tsc",
     "watch": "yarn run build -- -w",
@@ -21,11 +20,11 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.21.0",
-    "expo": "^50.0.11",
+    "expo": "^50.0.13",
     "expo-av": "^13.10.5",
     "expo-dev-client": "~3.3.10",
     "react": "18.2.0",
-    "react-native": "0.73.4",
+    "react-native": "0.73.5",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-reanimated": "~3.6.2",
     "react-native-tab-view": "^2.15.1"
